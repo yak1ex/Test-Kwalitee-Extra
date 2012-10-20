@@ -1,0 +1,5 @@
+Test-Kwalitee-Extra-v*/
+Test-Kwalitee-Extra-v*.tar.gz
+Debian_CPANTS.txt
+.build/
+*.BAK
