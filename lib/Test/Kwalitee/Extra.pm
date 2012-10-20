@@ -26,7 +26,7 @@ sub _init
 			no_generated_files => 1,
 			manifest_matches_dist => 1,
 
-		# broken in Module::CPANTS::Analyse 0.86 RT#80225
+		# broken in Module::CPANTS::Analyse 0.86 rt.cpan.org #80225
 			metayml_conforms_to_known_spec => 1,
 			metayml_conforms_spec_current  => 1,
 		},
@@ -41,7 +41,7 @@ sub _init
 	};
 }
 
-sub _check_enable
+sub _check_ind
 {
 	my ($env, $ind) = @_;
 	return 1 if $env->{include}{$ind->{name}};
@@ -64,7 +64,7 @@ sub _do_test
 		$mod->analyse($analyser);
 		foreach my $ind (@{$mod->kwalitee_indicators}) {
 			next if $ind->{needs_db};
-			next if ! _check_enable($env, $ind);	
+			next if ! _check_ind($env, $ind);	
 			my $ret = $ind->{code}($analyser->d, $ind);
 			push @ind, [ $ret, $ind->{name}.' by '.$mod, $ind->{error}, $ind->{remedy}, $analyser->d->{error}{$ind->{name}} ];
 		}
@@ -154,8 +154,8 @@ Test::Kwalitee::Extra - Run Kwalitee tests including optional indicators and pre
 
 =head1 OPTIONS
 
-You can specify enabling or disabling an indicator or a tag like L<Exporter>.
-Tags are C<core>, C<optional> and C<experimental>. See L<Module::CPANTS::Analyse> for indicators.
+You can specify including or excluding an indicator or a tag like L<Exporter>.
+Valid tags are C<core>, C<optional> and C<experimental>. See L<Module::CPANTS::Analyse> for indicators.
 
 Please NOTE that to specify tags are handled a bit differently from L<Exporter>.
 First, specifying an indicator is always superior to specifying tags, 
@@ -166,13 +166,17 @@ For example,
 
 C<!has_example> is in effect.
 
-Second, default excluded indicators mentioned in INDICATORS section are not enabled by specifying tags.
+Second, default excluded indicators mentioned in L</INDICATORS> section are not included by specifying tags.
 For example, the above example, C<:optional> does not enable C<is_prereq> and C<metayml_conforms_spec_current>.
-You can override explicitly specify the indicator.
+You can override it by explicitly specifying the indicator.
 
   use Test::Kwalitee::Extra qw(metayml_conforms_spec_current);
 
 =head1 INDICATORS
+
+In L<Module::CPANTS::Analyse>, prereq_matches_use requires CPANTS DB setup by L<Module::CPANTS::ProcessCPAN>.
+is_prereq really requires information of prereq of other modules but prereq_matches_use only needs mappings between modules and dists.
+So, this module query the mappings to MetaCPAN by using L<MetaCPAN::API::Tiny> (Not yet impelemented).
 
 For default configuration, indicators are treated as follows:
 
@@ -280,10 +284,6 @@ metayml_declares_perl_version
 
 prereq_matches_use (not yet enabled)
 
-In L<Module::CPANTS::Analyse>, this indicator requires CPANTS DB setup by L<Module::CPANTS::ProcessCPAN>.
-is_prereq acutally requires information of other modules but prereq_matches_use only needs mappings between modules and dists.
-So, this module query the mappings to MetaCPAN by using L<MetaCPAN::API::Tiny>.
-
 =item *
 
 use_warnings
@@ -338,7 +338,7 @@ no_generated_files
 
 =back
 
-=item Broken in Module::CPANTS::Analyse 0.86 RT#80225
+=item Broken in Module::CPANTS::Analyse 0.86 L<rt.cpan.org #80225|https://rt.cpan.org/Public/Bug/Display.html?id=80225>
 
 =over 4
 
@@ -364,7 +364,7 @@ is_prereq
 
 =back
 
-=item Broken in Module::CPANTS::Analyse 0.86 RT#80225
+=item Broken in Module::CPANTS::Analyse 0.86 L<rt.cpan.org #80225|https://rt.cpan.org/Public/Bug/Display.html?id=80225>
 
 =over 4
 
