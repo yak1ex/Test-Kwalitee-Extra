@@ -5,7 +5,9 @@ use warnings;
 
 # VERSION
 
+use version 0.77;
 use Cwd;
+use Carp;
 use Test::Builder;
 use MetaCPAN::API::Tiny;
 use Module::CPANTS::Analyse;
@@ -55,20 +57,77 @@ sub _check_ind
 	}
 }
 
+sub _is_core
+{
+	my ($module, $perlver) = @_;
+	$perlver ||= $];
+	return 0 if defined Module::CoreList->removed_from($module);
+	my $fr = Module::CoreList->first_release($module);
+	return 0 if ! defined $fr;
+	return 1 if version->parse($perlver) >= version->parse($fr);
+	return 0;
+}
+
+sub _do_test_pmu
+{
+	my ($env, $error, $remedy, $berror, $bremedy) = @_;
+	my ($test, $analyser) = @{$env}{qw(builder analyser)};
+	return if ! _check_ind($env, { name => 'prereq_matches_use', is_extra => 1 }) &&
+	          ! _check_ind($env, { name => 'build_prereq_matches_use', is_experimental => 1 });
+
+	my $mcpan = MetaCPAN::API::Tiny->new;
+
+	my (%build_prereq, %prereq);
+	while(my (undef, $val) = each @{$analyser->d->{prereq}}) {
+		next if _is_core($val->{requires}); # TODO: perlver
+		my $result = $mcpan->module($val->{requires});
+		croak 'Query to MetaCPAN failed for $val->{requires}' if ! exists $result->{distribution};
+		$prereq{$result->{distribution}} = 1 if $val->{is_prereq} || $val->{is_optional_prereq};
+		$build_prereq{$result->{distribution}} = 1 if $val->{is_prereq} || $val->{is_build_prereq} || $val->{is_optional_prereq};
+	}
+	my (@missing, @bmissing);
+	while(my ($key, $val) = each %{$analyser->d->{uses}}) {
+		next if _is_core($key); # TODO: perlver
+		my $result = $mcpan->module($key);
+		croak 'Query to MetaCPAN failed for $val->{requires}' if ! exists $result->{distribution};
+		my $dist = $result->{distribution};
+		push @missing, $key.' in '.$dist if $val->{in_code} && ! exists $prereq{$dist};
+# Test::Pod% excluded by Module-CPANTS-ProcessCPAN-0.77
+		push @bmissing, $key.' in '.$dist if $val->{in_tests} && $key !~ /^Test::Pod/ && ! exists $build_prereq{$dist};
+	}
+
+	my @ret;
+	push @ret, [ @missing == 0, 'prereq_matches_use by '.__PACKAGE__, $error, $remedy, 'Missing: '.join(', ', @missing) ]
+		if _check_ind($env, { name => 'prereq_matches_use', is_extra => 1 });
+	push @ret, [ @bmissing == 0, 'build_prereq_matches_use by '.__PACKAGE__, $berror, $bremedy, 'Missing: '.join(', ', @bmissing) ]
+		if _check_ind($env, { name => 'build_prereq_matches_use', is_experimental => 1 });
+	return @ret;
+}
+
 sub _do_test
 {
 	my ($env) = @_;
-	my ($test, $analyser, $exclude) = @{$env}{qw(builder analyser exclude)};
-	my @ind;
+	my ($test, $analyser) = @{$env}{qw(builder analyser)};
+	my (@ind, $pmu_error, $pmu_remedy, $bpmu_error, $bpmu_remedy);
 	foreach my $mod (@{$analyser->mck->generators}) {
 		$mod->analyse($analyser);
 		foreach my $ind (@{$mod->kwalitee_indicators}) {
+			if($ind->{name} eq 'prereq_matches_use') {
+				$pmu_error = $ind->{error};
+				$pmu_remedy = $ind->{remedy};
+			}
+			if($ind->{name} eq 'build_prereq_matches_use') {
+				$bpmu_error = $ind->{error};
+				$bpmu_remedy = $ind->{remedy};
+			}
 			next if $ind->{needs_db};
 			next if ! _check_ind($env, $ind);	
 			my $ret = $ind->{code}($analyser->d, $ind);
 			push @ind, [ $ret, $ind->{name}.' by '.$mod, $ind->{error}, $ind->{remedy}, $analyser->d->{error}{$ind->{name}} ];
 		}
 	}
+	my (@pmu) = _do_test_pmu($env, $pmu_error, $pmu_remedy, $bpmu_error, $bpmu_remedy);
+	push @ind, @pmu if @pmu; 
 	if($env->{no_plan}) {
 		$test->no_plan;
 	} else {
@@ -176,7 +235,7 @@ You can override it by explicitly specifying the indicator.
 
 In L<Module::CPANTS::Analyse>, prereq_matches_use requires CPANTS DB setup by L<Module::CPANTS::ProcessCPAN>.
 is_prereq really requires information of prereq of other modules but prereq_matches_use only needs mappings between modules and dists.
-So, this module query the mappings to MetaCPAN by using L<MetaCPAN::API::Tiny> (Not yet impelemented).
+So, this module query the mappings to MetaCPAN by using L<MetaCPAN::API::Tiny>.
 
 For default configuration, indicators are treated as follows:
 
@@ -282,7 +341,7 @@ metayml_declares_perl_version
 
 =item *
 
-prereq_matches_use (not yet enabled)
+prereq_matches_use
 
 =item *
 
