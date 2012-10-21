@@ -109,9 +109,9 @@ sub _do_test_pmu
 	}
 
 	my @ret;
-	push @ret, [ @missing == 0, 'prereq_matches_use by '.__PACKAGE__, $error, $remedy, 'Missing: '.join(', ', @missing) ]
+	push @ret, [ @missing == 0, 'prereq_matches_use by '.__PACKAGE__, $error, $remedy, 'Missing: '.join(', ', sort @missing) ]
 		if _check_ind($env, { name => 'prereq_matches_use', is_extra => 1 });
-	push @ret, [ @bmissing == 0, 'build_prereq_matches_use by '.__PACKAGE__, $berror, $bremedy, 'Missing: '.join(', ', @bmissing) ]
+	push @ret, [ @bmissing == 0, 'build_prereq_matches_use by '.__PACKAGE__, $berror, $bremedy, 'Missing: '.join(', ', sort @bmissing) ]
 		if _check_ind($env, { name => 'build_prereq_matches_use', is_experimental => 1 });
 	return @ret;
 }
