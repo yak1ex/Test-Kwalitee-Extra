@@ -11,6 +11,7 @@ use Carp;
 use Test::Builder;
 use MetaCPAN::API::Tiny;
 use Module::CPANTS::Analyse;
+use Module::CPANTS::Kwalitee::Prereq;
 use Module::CoreList;
 
 sub _init
@@ -43,6 +44,19 @@ sub _init
 	};
 }
 
+sub _pmu_error_desc
+{
+	my ($error, $remedy, $berror, $bremedy);
+
+	my $ref = Module::CPANTS::Kwalitee::Prereq->kwalitee_indicators;
+	while(my (undef, $val) = each @$ref) {
+		($error, $remedy) = @{$val}{qw(error remedy)} if $val->{name} eq 'prereq_matches_use';
+		($berror, $bremedy) = @{$val}{qw(error remedy)} if $val->{name} eq 'build_prereq_matches_use';
+	}
+
+	return ($error, $remedy, $berror, $bremedy);
+}
+
 sub _check_ind
 {
 	my ($env, $ind) = @_;
@@ -67,10 +81,10 @@ sub _is_core
 	return 0;
 }
 
-# TODO: Retrieve error and remedy directly
 sub _do_test_pmu
 {
-	my ($env, $error, $remedy, $berror, $bremedy) = @_;
+	my ($env) = @_;
+	my ($error, $remedy, $berror, $bremedy) = _pmu_error_desc();
 	my ($test, $analyser) = @{$env}{qw(builder analyser)};
 	return if ! _check_ind($env, { name => 'prereq_matches_use', is_extra => 1 }) &&
 	          ! _check_ind($env, { name => 'build_prereq_matches_use', is_experimental => 1 });
@@ -121,25 +135,17 @@ sub _do_test
 	local $Test::Builder::Level = $Test::Builder::Level + 1;
 	my ($env) = @_;
 	my ($test, $analyser) = @{$env}{qw(builder analyser)};
-	my (@ind, $pmu_error, $pmu_remedy, $bpmu_error, $bpmu_remedy);
+	my (@ind);
 	foreach my $mod (@{$analyser->mck->generators}) {
 		$mod->analyse($analyser);
 		foreach my $ind (@{$mod->kwalitee_indicators}) {
-			if($ind->{name} eq 'prereq_matches_use') {
-				$pmu_error = $ind->{error};
-				$pmu_remedy = $ind->{remedy};
-			}
-			if($ind->{name} eq 'build_prereq_matches_use') {
-				$bpmu_error = $ind->{error};
-				$bpmu_remedy = $ind->{remedy};
-			}
 			next if $ind->{needs_db};
 			next if ! _check_ind($env, $ind);	
 			my $ret = $ind->{code}($analyser->d, $ind);
 			push @ind, [ $ret, $ind->{name}.' by '.$mod, $ind->{error}, $ind->{remedy}, $analyser->d->{error}{$ind->{name}} ];
 		}
 	}
-	my (@pmu) = _do_test_pmu($env, $pmu_error, $pmu_remedy, $bpmu_error, $bpmu_remedy);
+	my (@pmu) = _do_test_pmu($env);
 	push @ind, @pmu if @pmu; 
 	if(! $env->{no_plan}) {
 		$test->plan(tests => scalar @ind);
