@@ -59,12 +59,11 @@ sub _check_ind
 
 sub _is_core
 {
-	my ($module, $perlver) = @_;
-	$perlver ||= $];
+	my ($module, $minperlver) = @_;
 	return 0 if defined Module::CoreList->removed_from($module);
 	my $fr = Module::CoreList->first_release($module);
 	return 0 if ! defined $fr;
-	return 1 if version->parse($perlver) >= version->parse($fr);
+	return 1 if version->parse($minperlver) >= version->parse($fr);
 	return 0;
 }
 
@@ -75,11 +74,23 @@ sub _do_test_pmu
 	return if ! _check_ind($env, { name => 'prereq_matches_use', is_extra => 1 }) &&
 	          ! _check_ind($env, { name => 'build_prereq_matches_use', is_experimental => 1 });
 
+	my $minperlver;
+	if(exists $env->{minperlver}) {
+		$minperlver = $env->{minperlver};
+	} else {
+		$minperlver = $];
+		while(my (undef, $val) = each @{$analyser->d->{prereq}}) {
+			if($val->{requires} eq 'perl') {
+				$minperlver = $val->{version};
+				last;
+			}
+		}
+	}
 	my $mcpan = MetaCPAN::API::Tiny->new;
 
 	my (%build_prereq, %prereq);
 	while(my (undef, $val) = each @{$analyser->d->{prereq}}) {
-		next if _is_core($val->{requires}); # TODO: perlver
+		next if _is_core($val->{requires}, $minperlver);
 		my $result = $mcpan->module($val->{requires});
 		croak 'Query to MetaCPAN failed for $val->{requires}' if ! exists $result->{distribution};
 		$prereq{$result->{distribution}} = 1 if $val->{is_prereq} || $val->{is_optional_prereq};
@@ -87,7 +98,7 @@ sub _do_test_pmu
 	}
 	my (@missing, @bmissing);
 	while(my ($key, $val) = each %{$analyser->d->{uses}}) {
-		next if _is_core($key); # TODO: perlver
+		next if _is_core($key, $minperlver);
 		my $result = $mcpan->module($key);
 		croak 'Query to MetaCPAN failed for $val->{requires}' if ! exists $result->{distribution};
 		my $dist = $result->{distribution};
@@ -150,9 +161,11 @@ sub import
 	my ($pkg, @arg) = @_;
 	my $env = _init();
 	my $ind_seen = 0;
-	foreach my $arg (@arg) {
+	while(my $arg = shift @arg) {
 		if($arg eq ':no_plan') {
 			$env->{no_plan} = 1;
+		} elsif($arg eq ':minperlver') {
+			$env->{minperlver} = shift @arg;
 		} elsif($arg =~ /^!:/) {
 			warn "Tag $arg appears after indicator" if $ind_seen;
 			$arg =~ s/^!://;
