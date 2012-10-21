@@ -1,4 +1,4 @@
-use Test::More;
+use Test::More tests => 2;
 eval {
 	require Test::Kwalitee::Extra;
 	Test::Kwalitee::Extra->import(qw(:no_plan !:core !:optional metayml_is_parsable));
