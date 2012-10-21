@@ -141,9 +141,7 @@ sub _do_test
 	}
 	my (@pmu) = _do_test_pmu($env, $pmu_error, $pmu_remedy, $bpmu_error, $bpmu_remedy);
 	push @ind, @pmu if @pmu; 
-	if($env->{no_plan}) {
-		$test->no_plan;
-	} else {
+	if(! $env->{no_plan}) {
 		$test->plan(tests => scalar @ind);
 	}
 	foreach my $ind (@ind) {
