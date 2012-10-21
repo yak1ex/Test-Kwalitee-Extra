@@ -197,7 +197,7 @@ __END__
 
 =head1 NAME
 
-Test::Kwalitee::Extra - Run Kwalitee tests including optional indicators and prereq_matches_use.
+Test::Kwalitee::Extra - Run Kwalitee tests including optional indicators, especially, prereq_matches_use.
 
 =head1 SYNOPSIS
 
@@ -209,7 +209,30 @@ Test::Kwalitee::Extra - Run Kwalitee tests including optional indicators and pre
   eval { require Test::Kwalitee::Extra; Test::Kwalitee::Extra->import(qw(!:optional)); };
   plan( skip_all => "Test::Kwalitee::Extra not installed: $@; skipping") if $@;
 
+  # Typically, this test is limited to author test or release test
+  BEGIN { # limited to release test
+    unless ($ENV{RELEASE_TESTING}) { # or $ENV{AUTHOR_TESTING} for author test
+      require Test::More;
+      Test::More::plan(skip_all => 'these tests are for release candidate testing');
+    }
+  }
+  use Test::More;
+  eval { require Test::Kwalitee::Extra; Test::Kwalitee::Extra->import(qw(!:optional)); };
+  plan( skip_all => "Test::Kwalitee::Extra not installed: $@; skipping") if $@;
+
+
 =head1 DESCRIPTION
+
+L<CPANTS|http://cpants.charsbar.org/> checks Kwalitee indicators, which is not quality 
+but automatically-measurable indicators how good your distribution is.
+L<Module::CPANTS::Analyse> calcluates Kwalitee but it is not directly applicable to your module test.
+CPAN has already had L<Test::Kwalitee> for the test module of Kwalitee.
+It is, however, limited to 13 indicators from 34 indicators (core and optional), as of 1.01.
+Furthermore, L<Module::CPANTS::Analyse> itself cannot calculate C<prereq_matches_use> indicator.
+It is marked as C<needs_db>, but only limited information is needed to calculate the indicator.
+This module calculate C<prereq_matches_use> to query needed information to L<MetaCPAN|https://metacpan.org/>.
+
+Currently, 18 core indicators and 8 optional indicators are available in default configuration. See L</INDICATORS> section.
 
 =head1 OPTIONS
 
@@ -223,11 +246,11 @@ For example,
 
   use Test::Kwalitee::Extra qw(!has_example :optional);
 
-C<!has_example> is in effect.
+C<!has_example> is in effect, that is C<has_exaple> is excluded, even though C<has_example> is an C<optional> indicator.
 
 Second, default excluded indicators mentioned in L</INDICATORS> section are not included by specifying tags.
 For example, the above example, C<:optional> does not enable C<is_prereq> and C<metayml_conforms_spec_current>.
-You can override it by explicitly specifying the indicator.
+You can override it by explicitly specifying the indicator:
 
   use Test::Kwalitee::Extra qw(metayml_conforms_spec_current);
 
@@ -443,12 +466,21 @@ metayml_conforms_spec_current
 
 =item *
 
-L<Module::CPANTS::Analyse>
+L<Module::CPANTS::Analyse> - Kwalitee indicators, except for prereq_matches_use, are calculated by this module.
 
 =item *
 
-L<Test::Kwalitee>
+L<Test::Kwalitee> - Another test module for Kwalitee indicators.
 
 =back
+
+=head1 AUTHOR
+
+Yasutaka ATARASHI <yakex@cpan.org>
+
+=head1 LICENSE
+
+This is free software; you can redistribute it and/or modify it under
+the same terms as the Perl 5 programming language system itself.
 
 =cut
