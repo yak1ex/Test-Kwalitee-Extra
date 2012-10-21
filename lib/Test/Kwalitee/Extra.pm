@@ -67,6 +67,7 @@ sub _is_core
 	return 0;
 }
 
+# TODO: Retrieve error and remedy directly
 sub _do_test_pmu
 {
 	my ($env, $error, $remedy, $berror, $bremedy) = @_;

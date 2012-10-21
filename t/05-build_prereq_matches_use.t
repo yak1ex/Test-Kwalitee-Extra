@@ -1,4 +1,5 @@
 use Test::More;
+# TODO: use Test::Builder::Tester;
 eval {
 	require Test::Kwalitee::Extra;
 	Test::Builder->new->todo_start('Tools cannot handle complex requirements e.g. TestSuggets');
