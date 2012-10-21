@@ -220,10 +220,10 @@ Test::Kwalitee::Extra - Run Kwalitee tests including optional indicators, especi
 
 =head1 SYNOPSIS
 
-  # Simply use, with disabling indicators
+  # Simply use, with excluding indicators
   use Test::Kwalitee::Extra qw(!has_example !metayml_declares_perl_version);
 
-  # Use with eval guard, with disabling class
+  # Use with eval guard, with excluding class
   use Test::More;
   eval { require Test::Kwalitee::Extra; Test::Kwalitee::Extra->import(qw(!:optional)); };
   plan( skip_all => "Test::Kwalitee::Extra not installed: $@; skipping") if $@;
@@ -256,7 +256,7 @@ Currently, 18 core indicators and 8 optional indicators are available in default
 =head1 OPTIONS
 
 You can specify including or excluding an indicator or a tag like L<Exporter>.
-Valid tags are C<core>, C<optional> and C<experimental>. See L<Module::CPANTS::Analyse> for indicators.
+Valid tags are C<core>, C<optional> and C<experimental>. For indicators, see L<Module::CPANTS::Analyse>.
 
 Please NOTE that to specify tags are handled a bit differently from L<Exporter>.
 First, specifying an indicator is always superior to specifying tags, 
@@ -268,10 +268,32 @@ For example,
 C<!has_example> is in effect, that is C<has_exaple> is excluded, even though C<has_example> is an C<optional> indicator.
 
 Second, default excluded indicators mentioned in L</INDICATORS> section are not included by specifying tags.
-For example, the above example, C<:optional> does not enable C<is_prereq> and C<metayml_conforms_spec_current>.
+For example, in the above example, C<:optional> does not enable C<is_prereq> and C<metayml_conforms_spec_current>.
 You can override it by explicitly specifying the indicator:
 
   use Test::Kwalitee::Extra qw(metayml_conforms_spec_current);
+
+=head2 SPECIAL TAGS
+
+Some tags have special meanings.
+
+=over 4
+
+=item C<:no_plan>
+
+If specified, do not call C<Test::Builder::plan>.
+You may need to specify it, if this test is embedded into other tests.
+
+=item C<:minperlver> <C<version>>
+
+C<prereq_matches_use> indicator ignores core modules.
+What modules are in core, however, is different among perl versions.
+If minimum perl version is specified in META.yml or such a meta information, it is used as minimum perl version.
+Otherewise, C<$]>, the version of the current perl interpreter, is used.
+
+If specified, this option overrides them.
+
+=back
 
 =head1 INDICATORS
 
