@@ -4,6 +4,6 @@ eval {
 	Test::Kwalitee::Extra->import(qw(:no_plan !:core !:optional metayml_is_parsable));
 };
 
-plan( skip_all => "Test::Kwalitee::PrereqMatchesUse not installed: $@; skipping") if $@;
+plan( skip_all => "Test::Kwalitee::Extra not installed: $@; skipping") if $@;
 
 ok(Test::Builder->new->current_test == 1);

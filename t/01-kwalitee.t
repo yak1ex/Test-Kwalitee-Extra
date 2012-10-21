@@ -4,4 +4,4 @@ eval {
 	Test::Kwalitee::Extra->import(qw(!has_example !metayml_declares_perl_version));
 };
 
-plan( skip_all => "Test::Kwalitee::PrereqMatchesUse not installed: $@; skipping") if $@;
+plan( skip_all => "Test::Kwalitee::Extra not installed: $@; skipping") if $@;
