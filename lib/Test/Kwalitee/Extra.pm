@@ -118,6 +118,7 @@ sub _do_test_pmu
 
 sub _do_test
 {
+	local $Test::Builder::Level = $Test::Builder::Level + 1;
 	my ($env) = @_;
 	my ($test, $analyser) = @{$env}{qw(builder analyser)};
 	my (@ind, $pmu_error, $pmu_remedy, $bpmu_error, $bpmu_remedy);
