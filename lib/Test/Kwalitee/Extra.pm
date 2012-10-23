@@ -113,6 +113,7 @@ sub _do_test_pmu
 	}
 	my (@missing, @bmissing);
 	while(my ($key, $val) = each %{$analyser->d->{uses}}) {
+		next if version::is_lax($key);
 		next if _is_core($key, $minperlver);
 		my $result = $mcpan->module($key);
 		croak 'Query to MetaCPAN failed for $val->{requires}' if ! exists $result->{distribution};
