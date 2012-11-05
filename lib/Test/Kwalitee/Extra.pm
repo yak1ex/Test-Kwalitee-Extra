@@ -97,6 +97,7 @@ sub _do_test_pmu
 		while(my (undef, $val) = each @{$analyser->d->{prereq}}) {
 			if($val->{requires} eq 'perl') {
 				$minperlver = $val->{version};
+				keys @{$analyser->d->{prereq}}; # reset each
 				last;
 			}
 		}
