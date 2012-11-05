@@ -1,6 +1,8 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+
+v0.0.3    2012-11-05 23:03:20 Asia/Tokyo
     [Functional Change]
         * Fix incorrect `each' iteration to avoid false alaram of prereq_matches_use.
     [Non-functional Change]
