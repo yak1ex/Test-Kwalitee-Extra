@@ -1,6 +1,10 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+    [Functional Change]
+        * Fix incorrect `each' iteration to avoid false alaram of prereq_matches_use.
+    [Non-functional Change]
+        * Use Pod::Weaver.
 
 v0.0.2    2012-10-24 06:42:18 Asia/Tokyo
     * Ignore require for perl version in prereq check.

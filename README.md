@@ -1,6 +1,10 @@
 # NAME
 
-Test::Kwalitee::Extra - Run Kwalitee tests including optional indicators, especially, prereq\_matches\_use.
+Test::Kwalitee::Extra - Run Kwalitee tests including optional indicators, especially, prereq\_matches\_use
+
+# VERSION
+
+version v0.0.3
 
 # SYNOPSIS
 
@@ -22,8 +26,6 @@ Test::Kwalitee::Extra - Run Kwalitee tests including optional indicators, especi
     use Test::More;
     eval { require Test::Kwalitee::Extra; Test::Kwalitee::Extra->import(qw(!:optional)); };
     plan( skip_all => "Test::Kwalitee::Extra not installed: $@; skipping") if $@;
-
-
 
 # DESCRIPTION
 
@@ -62,19 +64,19 @@ You can override it by explicitly specifying the indicator:
 
 Some tags have special meanings.
 
-- `:no_plan`
+## `:no\_plan`
 
-    If specified, do not call `Test::Builder::plan`.
-    You may need to specify it, if this test is embedded into other tests.
+If specified, do not call `Test::Builder::plan`.
+You may need to specify it, if this test is embedded into other tests.
 
-- `:minperlver` <`version`\>
+## `:minperlver` <`version`>
 
-    `prereq_matches_use` indicator ignores core modules.
-    What modules are in core, however, is different among perl versions.
-    If minimum perl version is specified in META.yml or such a meta information, it is used as minimum perl version.
-    Otherewise, `$]`, the version of the current perl interpreter, is used.
+`prereq_matches_use` indicator ignores core modules.
+What modules are in core, however, is different among perl versions.
+If minimum perl version is specified in META.yml or such a meta information, it is used as minimum perl version.
+Otherewise, `$]`, the version of the current perl interpreter, is used.
 
-    If specified, this option overrides them.
+If specified, this option overrides them.
 
 # INDICATORS
 
@@ -138,7 +140,9 @@ For default configuration, indicators are treated as follows:
 
 Yasutaka ATARASHI <yakex@cpan.org>
 
-# LICENSE
+# COPYRIGHT AND LICENSE
+
+This software is copyright (c) 2012 by Yasutaka ATARASHI.
 
 This is free software; you can redistribute it and/or modify it under
 the same terms as the Perl 5 programming language system itself.
