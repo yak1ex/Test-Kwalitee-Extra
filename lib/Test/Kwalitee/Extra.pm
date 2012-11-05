@@ -3,6 +3,7 @@ package Test::Kwalitee::Extra;
 use strict;
 use warnings;
 
+# ABSTRACT: Run Kwalitee tests including optional indicators, especially, prereq_matches_use
 # VERSION
 
 use version 0.77;
@@ -214,11 +215,6 @@ sub import
 
 1;
 __END__
-=pod
-
-=head1 NAME
-
-Test::Kwalitee::Extra - Run Kwalitee tests including optional indicators, especially, prereq_matches_use.
 
 =head1 SYNOPSIS
 
@@ -279,14 +275,12 @@ You can override it by explicitly specifying the indicator:
 
 Some tags have special meanings.
 
-=over 4
-
-=item C<:no_plan>
+=option C<:no_plan>
 
 If specified, do not call C<Test::Builder::plan>.
 You may need to specify it, if this test is embedded into other tests.
 
-=item C<:minperlver> <C<version>>
+=option C<:minperlver> <C<version>>
 
 C<prereq_matches_use> indicator ignores core modules.
 What modules are in core, however, is different among perl versions.
@@ -294,8 +288,6 @@ If minimum perl version is specified in META.yml or such a meta information, it 
 Otherewise, C<$]>, the version of the current perl interpreter, is used.
 
 If specified, this option overrides them.
-
-=back
 
 =head1 INDICATORS
 
@@ -305,225 +297,87 @@ So, this module query the mappings to MetaCPAN by using L<MetaCPAN::API::Tiny>.
 
 For default configuration, indicators are treated as follows:
 
-=over 4
+=begin :list
 
-=item Available indicators in core
+= Available indicators in core
 
-=over 4
+=for :list
+* has_readme
+* has_manifest
+* has_meta_yml
+* has_buildtool
+* has_changelog
+* no_symlinks
+* has_tests
+* buildtool_not_executable
+* metayml_is_parsable
+* metayml_has_license
+* proper_libs
+* no_pod_errors
+* has_working_buildtool
+* has_better_auto_install
+* use_strict
+* valid_signature
+* has_humanreadable_license
+* no_cpants_errors
 
-=item *
+= Available indicators in optional
 
-has_readme
+=for :list
+* has_tests_in_t_dir
+* has_example
+* no_stdin_for_prompting
+* metayml_declares_perl_version
+* prereq_matches_use
+* use_warnings
+* has_test_pod
+* has_test_pod_coverage
 
-=item *
+= Excluded indicators in core
 
-has_manifest
+=begin :list
 
-=item *
+= Can not apply already unpacked dist
 
-has_meta_yml
+=for :list
+* extractable
+* extracts_nicely
+* has_version
+* has_proper_version
 
-=item *
+= Already dirty in test phase
 
-has_buildtool
+=for :list
+* fest_matches_dist
+* no_generated_files
 
-=item *
+= Broken in Module::CPANTS::Analyse 0.86 L<rt.cpan.org #80225|https://rt.cpan.org/Public/Bug/Display.html?id=80225>
 
-has_changelog
+=for :list
+* metayml_conforms_to_known_spec
 
-=item *
+=end :list
 
-no_symlinks
+= Excluded indicators in optional
 
-=item *
+=begin :list
 
-has_tests
+= Needs CPANTS DB
 
-=item *
+=for :list
+* is_prereq
 
-buildtool_not_executable
+= Broken in Module::CPANTS::Analyse 0.86 L<rt.cpan.org #80225|https://rt.cpan.org/Public/Bug/Display.html?id=80225>
 
-=item *
+=for :list
+* metayml_conforms_spec_current
 
-metayml_is_parsable
+=end :list
 
-=item *
-
-metayml_has_license
-
-=item *
-
-proper_libs
-
-=item *
-
-no_pod_errors
-
-=item *
-
-has_working_buildtool
-
-=item *
-
-has_better_auto_install
-
-=item *
-
-use_strict
-
-=item *
-
-valid_signature
-
-=item *
-
-has_humanreadable_license
-
-=item *
-
-no_cpants_errors
-
-=back
-
-=item Available indicators in optional
-
-=over 4
-
-=item *
-
-has_tests_in_t_dir
-
-=item *
-
-has_example
-
-=item *
-
-no_stdin_for_prompting
-
-=item *
-
-metayml_declares_perl_version
-
-=item *
-
-prereq_matches_use
-
-=item *
-
-use_warnings
-
-=item *
-
-has_test_pod
-
-=item *
-
-has_test_pod_coverage
-
-=back
-
-=item Excluded indicators in core
-
-=over 4
-
-=item Can not apply already unpacked dist
-
-=over 4
-
-=item *
-
-extractable
-
-=item *
-
-extracts_nicely
-
-=item *
-
-has_version
-
-=item *
-
-has_proper_version
-
-=back
-
-=item Already dirty in test phase
-
-=over 4
-
-=item *
-
-fest_matches_dist
-
-=item *
-
-no_generated_files
-
-=back
-
-=item Broken in Module::CPANTS::Analyse 0.86 L<rt.cpan.org #80225|https://rt.cpan.org/Public/Bug/Display.html?id=80225>
-
-=over 4
-
-=item *
-
-metayml_conforms_to_known_spec
-
-=back
-
-=back
-
-=item Excluded indicators in optional
-
-=over 4
-
-=item Needs CPANTS DB
-
-=over 4
-
-=item *
-
-is_prereq
-
-=back
-
-=item Broken in Module::CPANTS::Analyse 0.86 L<rt.cpan.org #80225|https://rt.cpan.org/Public/Bug/Display.html?id=80225>
-
-=over 4
-
-=item *
-
-metayml_conforms_spec_current
-
-=back
-
-=back
-
-=back
+=end :list
 
 =head1 SEE ALSO
 
-=over 4
-
-=item *
-
-L<Module::CPANTS::Analyse> - Kwalitee indicators, except for prereq_matches_use, are calculated by this module.
-
-=item *
-
-L<Test::Kwalitee> - Another test module for Kwalitee indicators.
-
-=back
-
-=head1 AUTHOR
-
-Yasutaka ATARASHI <yakex@cpan.org>
-
-=head1 LICENSE
-
-This is free software; you can redistribute it and/or modify it under
-the same terms as the Perl 5 programming language system itself.
-
-=cut
+=for :list
+* L<Module::CPANTS::Analyse> - Kwalitee indicators, except for prereq_matches_use, are calculated by this module.
+* L<Test::Kwalitee> - Another test module for Kwalitee indicators.
