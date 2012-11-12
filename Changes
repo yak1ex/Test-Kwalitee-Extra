@@ -1,6 +1,8 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+    [Non-functional Change]
+        * Avoid each ARRAY to loosen minimum perl requirement.
 
 v0.0.3    2012-11-05 23:03:20 Asia/Tokyo
     [Functional Change]
