@@ -50,7 +50,7 @@ sub _pmu_error_desc
 	my ($error, $remedy, $berror, $bremedy);
 
 	my $ref = Module::CPANTS::Kwalitee::Prereq->kwalitee_indicators;
-	while(my (undef, $val) = each @$ref) {
+	foreach my $val (@$ref) {
 		($error, $remedy) = @{$val}{qw(error remedy)} if $val->{name} eq 'prereq_matches_use';
 		($berror, $bremedy) = @{$val}{qw(error remedy)} if $val->{name} eq 'build_prereq_matches_use';
 	}
@@ -95,10 +95,9 @@ sub _do_test_pmu
 		$minperlver = $env->{minperlver};
 	} else {
 		$minperlver = $];
-		while(my (undef, $val) = each @{$analyser->d->{prereq}}) {
+		for my $val (@{$analyser->d->{prereq}}) {
 			if($val->{requires} eq 'perl') {
 				$minperlver = $val->{version};
-				keys @{$analyser->d->{prereq}}; # reset each
 				last;
 			}
 		}
@@ -106,7 +105,7 @@ sub _do_test_pmu
 	my $mcpan = MetaCPAN::API::Tiny->new;
 
 	my (%build_prereq, %prereq);
-	while(my (undef, $val) = each @{$analyser->d->{prereq}}) {
+	foreach my $val (@{$analyser->d->{prereq}}) {
 		next if _is_core($val->{requires}, $minperlver);
 		my $result = $mcpan->module($val->{requires});
 		croak 'Query to MetaCPAN failed for $val->{requires}' if ! exists $result->{distribution};
