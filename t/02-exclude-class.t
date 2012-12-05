@@ -1,9 +1,16 @@
-use Test::More tests => 19;
-eval {
-	require Test::Kwalitee::Extra;
-	Test::Kwalitee::Extra->import(qw(:no_plan !:optional));
-};
+use strict;
+use warnings;
+use Test::More;
+use Module::CPANTS::Kwalitee;
 
-plan( skip_all => "Test::Kwalitee::Extra not installed: $@; skipping") if $@;
+require Test::Kwalitee::Extra;
 
-ok(Test::Builder->new->current_test == 18);
+my $mck = Module::CPANTS::Kwalitee->new;
+my $ref = Test::Kwalitee::Extra::_init();
+my $num = scalar grep { !exists $ref->{exclude}{$_} } @{$mck->core_indicator_names};
+
+plan( tests => $num + 1);
+
+Test::Kwalitee::Extra->import(qw(:no_plan !:optional));
+
+ok(Test::Builder->new->current_test == $num);
