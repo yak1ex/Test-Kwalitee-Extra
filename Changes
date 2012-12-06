@@ -1,6 +1,8 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+
+v0.0.5    2012-12-06 09:11:16 Asia/Tokyo
     [Non-functional Change]
         * Require 0.86 of Module::CPANTS::Analyse, to avoid trouble by renamed module.
         * Avoid magic number for the number of indicators in t/02-exclude-class.t.
