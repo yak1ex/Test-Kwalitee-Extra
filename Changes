@@ -1,6 +1,10 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+    [Non-functional Change]
+        * Require 0.86 of Module::CPANTS::Analyse, to avoid trouble by renamed module.
+        * Avoid magic number for the number of indicators in t/02-exclude-class.t.
+        * Remove unnecessary eval guard in tests.
 
 v0.0.4    2012-11-12 22:39:29 Asia/Tokyo
     [Non-functional Change]

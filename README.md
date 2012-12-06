@@ -4,7 +4,7 @@ Test::Kwalitee::Extra - Run Kwalitee tests including optional indicators, especi
 
 # VERSION
 
-version v0.0.4
+version v0.0.5
 
 # SYNOPSIS
 
@@ -64,12 +64,12 @@ You can override it by explicitly specifying the indicator:
 
 Some tags have special meanings.
 
-## `:no\_plan`
+## `:no_plan`
 
 If specified, do not call `Test::Builder::plan`.
 You may need to specify it, if this test is embedded into other tests.
 
-## `:minperlver` <`version`>
+## `:minperlver` <`version`\>
 
 `prereq_matches_use` indicator ignores core modules.
 What modules are in core, however, is different among perl versions.
