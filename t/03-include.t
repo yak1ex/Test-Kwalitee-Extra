@@ -1,9 +1,3 @@
 use Test::More tests => 2;
-eval {
-	require Test::Kwalitee::Extra;
-	Test::Kwalitee::Extra->import(qw(:no_plan !:core !:optional metayml_is_parsable));
-};
-
-plan( skip_all => "Test::Kwalitee::Extra not installed: $@; skipping") if $@;
-
+use Test::Kwalitee::Extra qw(:no_plan !:core !:optional metayml_is_parsable);
 ok(Test::Builder->new->current_test == 1);
