@@ -120,8 +120,7 @@ sub _do_test_pmu
 		croak 'Query to MetaCPAN failed for $val->{requires}' if ! exists $result->{distribution};
 		my $dist = $result->{distribution};
 		push @missing, $key.' in '.$dist if $val->{in_code} && ! exists $prereq{$dist};
-# Test::Pod% excluded by Module-CPANTS-ProcessCPAN-0.77
-		push @bmissing, $key.' in '.$dist if $val->{in_tests} && $key !~ /^Test::Pod/ && ! exists $build_prereq{$dist};
+		push @bmissing, $key.' in '.$dist if $val->{in_tests} && ! exists $build_prereq{$dist};
 	}
 
 	my @ret;
