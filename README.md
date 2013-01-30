@@ -4,7 +4,7 @@ Test::Kwalitee::Extra - Run Kwalitee tests including optional indicators, especi
 
 # VERSION
 
-version v0.0.5
+version v0.0.6
 
 # SYNOPSIS
 
@@ -29,7 +29,7 @@ version v0.0.5
 
 # DESCRIPTION
 
-[CPANTS](http://cpants.charsbar.org/) checks Kwalitee indicators, which is not quality 
+[CPANTS](http://cpants.cpanauthors.org/) checks Kwalitee indicators, which is not quality 
 but automatically-measurable indicators how good your distribution is.
 [Module::CPANTS::Analyse](http://search.cpan.org/perldoc?Module::CPANTS::Analyse) calcluates Kwalitee but it is not directly applicable to your module test.
 CPAN has already had [Test::Kwalitee](http://search.cpan.org/perldoc?Test::Kwalitee) for the test module of Kwalitee.
@@ -142,7 +142,7 @@ Yasutaka ATARASHI <yakex@cpan.org>
 
 # COPYRIGHT AND LICENSE
 
-This software is copyright (c) 2012 by Yasutaka ATARASHI.
+This software is copyright (c) 2013 by Yasutaka ATARASHI.
 
 This is free software; you can redistribute it and/or modify it under
 the same terms as the Perl 5 programming language system itself.

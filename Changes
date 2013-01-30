@@ -2,6 +2,9 @@ Revision history for {{$dist->name}}
 
 {{$NEXT}}
 
+v0.0.6    2013-01-31 00:39:49 Asia/Tokyo
+    * Do not exclude Test::Pod* in build_prereq_matches_use as the CPANTS site.
+
 v0.0.5    2012-12-06 09:11:16 Asia/Tokyo
     [Non-functional Change]
         * Require 0.86 of Module::CPANTS::Analyse, to avoid trouble by renamed module.
