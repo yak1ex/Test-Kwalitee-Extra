@@ -238,7 +238,7 @@ __END__
 
 =head1 DESCRIPTION
 
-L<CPANTS|http://cpants.charsbar.org/> checks Kwalitee indicators, which is not quality 
+L<CPANTS|http://cpants.cpanauthors.org/> checks Kwalitee indicators, which is not quality 
 but automatically-measurable indicators how good your distribution is.
 L<Module::CPANTS::Analyse> calcluates Kwalitee but it is not directly applicable to your module test.
 CPAN has already had L<Test::Kwalitee> for the test module of Kwalitee.
