@@ -9,11 +9,13 @@ use warnings;
 use version 0.77;
 use Cwd;
 use Carp;
+use File::Spec::Functions;
 use Test::Builder;
 use MetaCPAN::API::Tiny;
 use Module::CPANTS::Analyse;
 use Module::CPANTS::Kwalitee::Prereq;
 use Module::CoreList;
+
 
 sub _init
 {
@@ -112,9 +114,42 @@ sub _do_test_pmu
 		$prereq{$result->{distribution}} = 1 if $val->{is_prereq} || $val->{is_optional_prereq};
 		$build_prereq{$result->{distribution}} = 1 if $val->{is_prereq} || $val->{is_build_prereq} || $val->{is_optional_prereq};
 	}
+
+	# Look at META.yml to determine if the author specified modules provided
+	# by the distribution that should not be indexed by CPAN.
+	my $meta_yml = $analyser->d->{'meta_yml'};
+	my $packages_not_indexed = {};
+	if (defined $meta_yml) {
+		my $no_index = defined $meta_yml->{'no_index'}
+			? $meta_yml->{'no_index'}->{'file'} || []
+			: [];
+
+		foreach my $file (@$no_index) {
+			# Inspired by Module::CPANTS::Kwalitee::FindModules.
+			my $remaining_lines_to_inspect = 666;
+			open(my $fh, "<", File::Spec::Functions::catfile($analyser->distdir(), $file));
+			while (my $line = <$fh>) {
+				next if $line =~/\A\s*#/; # ignore comments
+				last if $line =~ /^__(?:DATA|END)__/;
+
+				my ( $module ) = ( $line =~ /\A\s*package\s*(.*?)\s*;/ );
+				if (defined($module)) {
+					$packages_not_indexed->{$module} = undef;
+					last;
+				}
+
+				$remaining_lines_to_inspect--;
+				last if $remaining_lines_to_inspect == 0;
+			}
+			close($fh);
+		}
+	}
+
 	my (@missing, @bmissing);
 	while(my ($key, $val) = each %{$analyser->d->{uses}}) {
 		next if version::is_lax($key);
+		# Skip packages provided by the distribution but not indexed by CPAN.
+		next if exists $packages_not_indexed->{$key};
 		next if _is_core($key, $minperlver);
 		my $result = $mcpan->module($key);
 		croak 'Query to MetaCPAN failed for $val->{requires}' if ! exists $result->{distribution};
