@@ -30,9 +30,6 @@ sub _init
 			no_generated_files => 1,
 			manifest_matches_dist => 1,
 
-		# broken in Module::CPANTS::Analyse 0.86 rt.cpan.org #80225
-			metayml_conforms_to_known_spec => 1,
-			metayml_conforms_spec_current  => 1,
 		},
 		include => {},
 		core => 1,
@@ -264,10 +261,10 @@ For example,
 C<!has_example> is in effect, that is C<has_exaple> is excluded, even though C<has_example> is an C<optional> indicator.
 
 Second, default excluded indicators mentioned in L</INDICATORS> section are not included by specifying tags.
-For example, in the above example, C<:optional> does not enable C<is_prereq> and C<metayml_conforms_spec_current>.
+For example, in the above example, C<:optional> does not enable C<is_prereq>.
 You can override it by explicitly specifying the indicator:
 
-  use Test::Kwalitee::Extra qw(metayml_conforms_spec_current);
+  use Test::Kwalitee::Extra qw(manifest_matches_dist);
 
 =head2 SPECIAL TAGS
 
@@ -310,6 +307,7 @@ For default configuration, indicators are treated as follows:
 * buildtool_not_executable
 * metayml_is_parsable
 * metayml_has_license
+* metayml_conforms_to_known_spec
 * proper_libs
 * no_pod_errors
 * has_working_buildtool
@@ -325,6 +323,7 @@ For default configuration, indicators are treated as follows:
 * has_tests_in_t_dir
 * has_example
 * no_stdin_for_prompting
+* metayml_conforms_spec_current
 * metayml_declares_perl_version
 * prereq_matches_use
 * use_warnings
@@ -346,13 +345,8 @@ For default configuration, indicators are treated as follows:
 = Already dirty in test phase
 
 =for :list
-* fest_matches_dist
+* manifest_matches_dist
 * no_generated_files
-
-= Broken in Module::CPANTS::Analyse 0.86 L<rt.cpan.org #80225|https://rt.cpan.org/Public/Bug/Display.html?id=80225>
-
-=for :list
-* metayml_conforms_to_known_spec
 
 =end :list
 
@@ -364,11 +358,6 @@ For default configuration, indicators are treated as follows:
 
 =for :list
 * is_prereq
-
-= Broken in Module::CPANTS::Analyse 0.86 L<rt.cpan.org #80225|https://rt.cpan.org/Public/Bug/Display.html?id=80225>
-
-=for :list
-* metayml_conforms_spec_current
 
 =end :list
 

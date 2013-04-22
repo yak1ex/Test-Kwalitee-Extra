@@ -55,10 +55,10 @@ For example,
 `!has_example` is in effect, that is `has_exaple` is excluded, even though `has_example` is an `optional` indicator.
 
 Second, default excluded indicators mentioned in ["INDICATORS"](#INDICATORS) section are not included by specifying tags.
-For example, in the above example, `:optional` does not enable `is_prereq` and `metayml_conforms_spec_current`.
+For example, in the above example, `:optional` does not enable `is_prereq`.
 You can override it by explicitly specifying the indicator:
 
-    use Test::Kwalitee::Extra qw(metayml_conforms_spec_current);
+    use Test::Kwalitee::Extra qw(manifest_matches_dist);
 
 ## SPECIAL TAGS
 
@@ -97,6 +97,7 @@ For default configuration, indicators are treated as follows:
     - buildtool\_not\_executable
     - metayml\_is\_parsable
     - metayml\_has\_license
+    - metayml\_conforms\_to\_known\_spec
     - proper\_libs
     - no\_pod\_errors
     - has\_working\_buildtool
@@ -109,6 +110,7 @@ For default configuration, indicators are treated as follows:
     - has\_tests\_in\_t\_dir
     - has\_example
     - no\_stdin\_for\_prompting
+    - metayml\_conforms\_spec\_current
     - metayml\_declares\_perl\_version
     - prereq\_matches\_use
     - use\_warnings
@@ -121,15 +123,11 @@ For default configuration, indicators are treated as follows:
         - has\_version
         - has\_proper\_version
     - Already dirty in test phase
-        - fest\_matches\_dist
+        - manifest\_matches\_dist
         - no\_generated\_files
-    - Broken in Module::CPANTS::Analyse 0.86 [rt.cpan.org \#80225](https://rt.cpan.org/Public/Bug/Display.html?id=80225)
-        - metayml\_conforms\_to\_known\_spec
 - Excluded indicators in optional
     - Needs CPANTS DB
         - is\_prereq
-    - Broken in Module::CPANTS::Analyse 0.86 [rt.cpan.org \#80225](https://rt.cpan.org/Public/Bug/Display.html?id=80225)
-        - metayml\_conforms\_spec\_current
 
 # SEE ALSO
 
