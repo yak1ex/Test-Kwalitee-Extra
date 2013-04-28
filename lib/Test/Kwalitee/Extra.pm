@@ -9,11 +9,15 @@ use warnings;
 use version 0.77;
 use Cwd;
 use Carp;
+use File::Find;
+use File::Spec;
 use Test::Builder;
 use MetaCPAN::API::Tiny;
 use Module::CPANTS::Analyse;
 use Module::CPANTS::Kwalitee::Prereq;
 use Module::CoreList;
+use Module::Extract::Namespaces;
+
 
 sub _init
 {
@@ -109,9 +113,19 @@ sub _do_test_pmu
 		$prereq{$result->{distribution}} = 1 if $val->{is_prereq} || $val->{is_optional_prereq};
 		$build_prereq{$result->{distribution}} = 1 if $val->{is_prereq} || $val->{is_build_prereq} || $val->{is_optional_prereq};
 	}
+
+	# Look at META.yml to determine if the author specified modules provided
+	# by the distribution that should not be indexed by CPAN.
+	my $packages_not_indexed = _get_packages_not_indexed(
+		d       => $analyser->d,
+		distdir => $analyser->distdir,
+	);
+
 	my (@missing, @bmissing);
 	while(my ($key, $val) = each %{$analyser->d->{uses}}) {
 		next if version::is_lax($key);
+		# Skip packages provided by the distribution but not indexed by CPAN.
+		next if scalar( grep {$key eq $_} @$packages_not_indexed ) != 0;
 		next if _is_core($key, $minperlver);
 		my $result = $mcpan->module($key);
 		croak 'Query to MetaCPAN failed for $val->{requires}' if ! exists $result->{distribution};
@@ -126,6 +140,78 @@ sub _do_test_pmu
 	push @ret, [ @bmissing == 0, 'build_prereq_matches_use by '.__PACKAGE__, $berror, $bremedy, 'Missing: '.join(', ', sort @bmissing) ]
 		if _check_ind($env, { name => 'build_prereq_matches_use', is_experimental => 1 });
 	return @ret;
+}
+
+# Look at META.yml to determine if the author specified modules provided
+# by the distribution that should not be indexed by CPAN.
+sub _get_packages_not_indexed
+{
+	my (%args) = @_;
+	my $d = delete $args{'d'};
+	my $distdir = delete $args{'distdir'};
+
+	# Check if no_index exists in META.yml
+	my $meta_yml = $d->{'meta_yml'};
+	return [] if !defined $meta_yml;
+	my $no_index = $meta_yml->{'no_index'};
+	return [] if !defined $no_index;
+
+	# Get the uses, to determine which ones are no-index internals.
+	my $uses = $d->{'uses'};
+	return [] if !defined $uses;
+
+	my $packages_not_indexed = {};
+
+	# Find all the files corresponding to the 'file' and 'directory'
+	# sections of 'no_index'.
+	my @files = ();
+
+	if (defined $no_index->{'file'}) {
+		push @files, map { File::Spec->catdir($distdir, $_) } @{$no_index->{'file'}};
+	}
+
+	if (defined $no_index->{'directory'}) {
+		my $filter_pm_files = sub {
+			return if $File::Find::name !~ /\.pm$/;
+			push(@files, $File::Find::name);
+		};
+
+		foreach my $directory (@{$no_index->{'directory'}}) {
+			File::Find::find(
+				$filter_pm_files,
+				File::Spec->catdir($distdir, $directory),
+			);
+		}
+	}
+
+	# Extract the namespaces from those files.
+	foreach my $file (@files) {
+		my @namespaces = Module::Extract::Namespaces->from_file($file);
+		foreach my $namespace (@namespaces) {
+			next if !exists $uses->{$namespace};
+			$packages_not_indexed->{$namespace} = undef;
+		}
+	}
+
+	# 'package' section of no_index.
+	if (defined $no_index->{'package'}) {
+		foreach my $package (@{$no_index->{'package'}}) {
+			next if !exists $uses->{$package};
+			$packages_not_indexed->{$package} = undef;
+		}
+	}
+
+	# 'namespace' section of no_index.
+	if (defined $no_index->{'namespace'}) {
+		foreach my $use (keys %$uses) {
+			foreach my $namespace (@{$no_index->{'namespace'}}) {
+				next if $use !~ /^\Q$namespace\E(?:::|$)/;
+				$packages_not_indexed->{$use} = undef;
+			}
+		}
+	}
+
+	return [sort keys %$packages_not_indexed];
 }
 
 sub _do_test
