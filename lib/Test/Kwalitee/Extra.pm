@@ -483,3 +483,4 @@ For default configuration, indicators are treated as follows:
 =for :list
 * L<Module::CPANTS::Analyse> - Kwalitee indicators, except for prereq_matches_use, are calculated by this module.
 * L<Test::Kwalitee> - Another test module for Kwalitee indicators.
+* L<Dist::Zilla::Plugin::Test::Kwalitee::Extra> - Dist::Zilla plugin for this module.
