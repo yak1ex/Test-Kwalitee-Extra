@@ -4,7 +4,7 @@ Test::Kwalitee::Extra - Run Kwalitee tests including optional indicators, especi
 
 # VERSION
 
-version v0.0.6
+version v0.0.7
 
 # SYNOPSIS
 
@@ -33,12 +33,12 @@ version v0.0.6
 but automatically-measurable indicators how good your distribution is.
 [Module::CPANTS::Analyse](http://search.cpan.org/perldoc?Module::CPANTS::Analyse) calcluates Kwalitee but it is not directly applicable to your module test.
 CPAN has already had [Test::Kwalitee](http://search.cpan.org/perldoc?Test::Kwalitee) for the test module of Kwalitee.
-It is, however, limited to 13 indicators from 34 indicators (core and optional), as of 1.01.
+It is, however, limited to 13 indicators from 35 indicators (core and optional), as of 1.01.
 Furthermore, [Module::CPANTS::Analyse](http://search.cpan.org/perldoc?Module::CPANTS::Analyse) itself cannot calculate `prereq_matches_use` indicator.
 It is marked as `needs_db`, but only limited information is needed to calculate the indicator.
 This module calculate `prereq_matches_use` to query needed information to [MetaCPAN](https://metacpan.org/).
 
-Currently, 18 core indicators and 8 optional indicators are available in default configuration. See ["INDICATORS"](#INDICATORS) section.
+Currently, 19 core indicators and 9 optional indicators are available in default configuration. See ["INDICATORS"](#INDICATORS) section.
 
 # OPTIONS
 
@@ -133,6 +133,7 @@ For default configuration, indicators are treated as follows:
 
 - [Module::CPANTS::Analyse](http://search.cpan.org/perldoc?Module::CPANTS::Analyse) - Kwalitee indicators, except for prereq\_matches\_use, are calculated by this module.
 - [Test::Kwalitee](http://search.cpan.org/perldoc?Test::Kwalitee) - Another test module for Kwalitee indicators.
+- [Dist::Zilla::Plugin::Test::Kwalitee::Extra](http://search.cpan.org/perldoc?Dist::Zilla::Plugin::Test::Kwalitee::Extra) - Dist::Zilla plugin for this module.
 
 # AUTHOR
 

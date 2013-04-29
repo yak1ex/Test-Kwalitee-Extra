@@ -2,6 +2,11 @@ Revision history for {{$dist->name}}
 
 {{$NEXT}}
 
+v0.0.7    2013-04-29 19:08:15 Asia/Tokyo
+    - Account for modules in the no_index section of META.yml (thanks Guillaume Aubert).
+    - Output results one-by-one.
+    - Re-enable metayml_conforms_* indicators because rt.cpan.org #80225 has been fixed.
+
 v0.0.6    2013-01-31 00:39:49 Asia/Tokyo
     - Do not exclude Test::Pod* in build_prereq_matches_use as the CPANTS site.
 
