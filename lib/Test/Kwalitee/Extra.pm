@@ -354,12 +354,12 @@ L<CPANTS|http://cpants.cpanauthors.org/> checks Kwalitee indicators, which is no
 but automatically-measurable indicators how good your distribution is.
 L<Module::CPANTS::Analyse> calcluates Kwalitee but it is not directly applicable to your module test.
 CPAN has already had L<Test::Kwalitee> for the test module of Kwalitee.
-It is, however, limited to 13 indicators from 34 indicators (core and optional), as of 1.01.
+It is, however, limited to 13 indicators from 35 indicators (core and optional), as of 1.01.
 Furthermore, L<Module::CPANTS::Analyse> itself cannot calculate C<prereq_matches_use> indicator.
 It is marked as C<needs_db>, but only limited information is needed to calculate the indicator.
 This module calculate C<prereq_matches_use> to query needed information to L<MetaCPAN|https://metacpan.org/>.
 
-Currently, 18 core indicators and 8 optional indicators are available in default configuration. See L</INDICATORS> section.
+Currently, 19 core indicators and 9 optional indicators are available in default configuration. See L</INDICATORS> section.
 
 =head1 OPTIONS
 
