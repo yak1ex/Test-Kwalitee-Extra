@@ -83,8 +83,24 @@ sub _is_core
 	return 0;
 }
 
+sub _do_test_one
+{
+	local $Test::Builder::Level = $Test::Builder::Level + 1;
+
+	my ($test, $ok, $name, $error, $remedy, $more) = @_;
+
+	$test->ok($ok, $name);
+	if(!$ok) {
+		$test->diag('  Detail: ', $error);
+		$test->diag('  Detail: ', ref($more) ? join(', ', @$more) : $more) if defined $more;
+		$test->diag('  Remedy: ', $remedy);
+	}
+}
+
 sub _do_test_pmu
 {
+	local $Test::Builder::Level = $Test::Builder::Level + 1;
+
 	my ($env) = @_;
 	my ($error, $remedy, $berror, $bremedy) = _pmu_error_desc();
 	my ($test, $analyser) = @{$env}{qw(builder analyser)};
@@ -134,12 +150,10 @@ sub _do_test_pmu
 		push @bmissing, $key.' in '.$dist if $val->{in_tests} && ! exists $build_prereq{$dist};
 	}
 
-	my @ret;
-	push @ret, [ @missing == 0, 'prereq_matches_use by '.__PACKAGE__, $error, $remedy, 'Missing: '.join(', ', sort @missing) ]
+	_do_test_one($test, @missing == 0, 'prereq_matches_use by '.__PACKAGE__, $error, $remedy, 'Missing: '.join(', ', sort @missing))
 		if _check_ind($env, { name => 'prereq_matches_use', is_extra => 1 });
-	push @ret, [ @bmissing == 0, 'build_prereq_matches_use by '.__PACKAGE__, $berror, $bremedy, 'Missing: '.join(', ', sort @bmissing) ]
+	_do_test_one($test, @bmissing == 0, 'build_prereq_matches_use by '.__PACKAGE__, $berror, $bremedy, 'Missing: '.join(', ', sort @bmissing))
 		if _check_ind($env, { name => 'build_prereq_matches_use', is_experimental => 1 });
-	return @ret;
 }
 
 # Look at META.yml to determine if the author specified modules provided
@@ -214,34 +228,49 @@ sub _get_packages_not_indexed
 	return [sort keys %$packages_not_indexed];
 }
 
+sub _count_tests
+{
+	my ($env) = @_;
+	my ($test, $analyser) = @{$env}{qw(builder analyser)};
+	my $count = 0;
+	foreach my $mod (@{$analyser->mck->generators}) {
+		foreach my $ind (@{$mod->kwalitee_indicators}) {
+			next if $ind->{needs_db};
+			next if ! _check_ind($env, $ind);
+			++$count;
+		}
+	}
+	# overrides needs_db
+	++$count if ! _check_ind($env, { name => 'prereq_matches_use', is_extra => 1 });
+	++$count if ! _check_ind($env, { name => 'build_prereq_matches_use', is_experimental => 1 });
+	return $count;
+}
+
 sub _do_test
 {
 	local $Test::Builder::Level = $Test::Builder::Level + 1;
 	my ($env) = @_;
 	my ($test, $analyser) = @{$env}{qw(builder analyser)};
-	my (@ind);
+
+	if(! $env->{no_plan}) {
+		$test->plan(tests => _count_tests(@_));
+	}
 	foreach my $mod (@{$analyser->mck->generators}) {
 		$mod->analyse($analyser);
 		foreach my $ind (@{$mod->kwalitee_indicators}) {
 			next if $ind->{needs_db};
-			next if ! _check_ind($env, $ind);	
-			my $ret = $ind->{code}($analyser->d, $ind);
-			push @ind, [ $ret, $ind->{name}.' by '.$mod, $ind->{error}, $ind->{remedy}, $analyser->d->{error}{$ind->{name}} ];
+			next if ! _check_ind($env, $ind);
+			_do_test_one(
+				$test,
+				$ind->{code}($analyser->d, $ind),
+				$ind->{name}.' by '.$mod,
+				$ind->{error},
+				$ind->{remedy},
+				$analyser->d->{error}{$ind->{name}}
+			);
 		}
 	}
-	my (@pmu) = _do_test_pmu($env);
-	push @ind, @pmu if @pmu; 
-	if(! $env->{no_plan}) {
-		$test->plan(tests => scalar @ind);
-	}
-	foreach my $ind (@ind) {
-		$test->ok($ind->[0], $ind->[1]);
-		if(!$ind->[0]) {
-			$test->diag('  Detail: ', $ind->[2]);
-			$test->diag('  Detail: ', ref($ind->[4]) ? join(', ', @{$ind->[4]}) : $ind->[4]) if defined $ind->[4];
-			$test->diag('  Remedy: ', $ind->[3]);
-		}
-	}
+	_do_test_pmu($env);
 }
 
 my %class = ( core => 1, optional => 1, experimental => 1 );
