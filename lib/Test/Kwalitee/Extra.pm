@@ -13,7 +13,7 @@ use File::Find;
 use File::Spec;
 use Test::Builder;
 use MetaCPAN::API::Tiny;
-use Module::CPANTS::Analyse;
+use Module::CPANTS::Analyse 0.87;
 use Module::CPANTS::Kwalitee::Prereq;
 use Module::CoreList;
 use Module::Extract::Namespaces;
