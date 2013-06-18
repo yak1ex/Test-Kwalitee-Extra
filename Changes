@@ -2,6 +2,10 @@ Revision history for {{$dist->name}}
 
 {{$NEXT}}
 
+v0.0.8    2013-06-18 23:02:32 Asia/Tokyo
+    [Non-functional Change]
+        - Add minimum version of Module::CoreList (thanks Guillaume Aubert).
+
 v0.0.7    2013-04-29 19:08:15 Asia/Tokyo
     - Account for modules in the no_index section of META.yml (thanks Guillaume Aubert).
     - Output results one-by-one.
