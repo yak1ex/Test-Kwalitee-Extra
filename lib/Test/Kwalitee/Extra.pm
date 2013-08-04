@@ -360,34 +360,23 @@ __END__
 
 =head1 DESCRIPTION
 
-L<CPANTS|http://cpants.cpanauthors.org/> checks Kwalitee indicators, which is not quality 
-but automatically-measurable indicators how good your distribution is.
-L<Module::CPANTS::Analyse> calcluates Kwalitee but it is not directly applicable to your module test.
-CPAN has already had L<Test::Kwalitee> for the test module of Kwalitee.
-It is, however, limited to 13 indicators from 35 indicators (core and optional), as of 1.01.
-Furthermore, L<Module::CPANTS::Analyse> itself cannot calculate C<prereq_matches_use> indicator.
-It is marked as C<needs_db>, but only limited information is needed to calculate the indicator.
-This module calculate C<prereq_matches_use> to query needed information to L<MetaCPAN|https://metacpan.org/>.
+L<CPANTS|http://cpants.cpanauthors.org/> checks Kwalitee indicators, which is not quality but automatically-measurable indicators how good your distribution is. L<Module::CPANTS::Analyse> calcluates Kwalitee but it is not directly applicable to your module test. CPAN has already had L<Test::Kwalitee> for the test module of Kwalitee. It is, however, impossible to calculate C<prereq_matches_use> indicator, because dependent module L<Module::CPANTS::Analyse> itself cannot calculate C<prereq_matches_use> indicator. It is marked as C<needs_db>, but only limited information is needed to calculate the indicator. This module calculate C<prereq_matches_use> to query needed information to L<MetaCPAN|https://metacpan.org/>.
 
-Currently, 19 core indicators and 9 optional indicators are available in default configuration. See L</INDICATORS> section.
+For available indicators, see L</INDICATORS> section.
 
 =head1 OPTIONS
 
-You can specify including or excluding an indicator or a tag like L<Exporter>.
-Valid tags are C<core>, C<optional> and C<experimental>. For indicators, see L<Module::CPANTS::Analyse>.
+You can specify including or excluding an indicator or a tag like L<Exporter>. Valid tags are C<core>, C<optional> and C<experimental>. For indicators, see L<Module::CPANTS::Analyse>.
 
-Please NOTE that to specify tags are handled a bit differently from L<Exporter>.
-First, specifying an indicator is always superior to specifying tags, 
-even though specifying an indicator is prior to specifying tags.
+Please NOTE that to specify tags are handled a bit differently from L<Exporter>. First, specifying an indicator is always superior to specifying tags, even though specifying an indicator is prior to specifying tags.
+
 For example, 
 
   use Test::Kwalitee::Extra qw(!has_example :optional);
 
 C<!has_example> is in effect, that is C<has_exaple> is excluded, even though C<has_example> is an C<optional> indicator.
 
-Second, default excluded indicators mentioned in L</INDICATORS> section are not included by specifying tags.
-For example, in the above example, C<:optional> does not enable C<is_prereq>.
-You can override it by explicitly specifying the indicator:
+Second, default excluded indicators mentioned in L</INDICATORS> section are not included by specifying tags. For example, in the above example, C<:optional> does not enable C<is_prereq>. You can override it by explicitly specifying the indicator:
 
   use Test::Kwalitee::Extra qw(manifest_matches_dist);
 
@@ -397,27 +386,33 @@ Some tags have special meanings.
 
 =option C<:no_plan>
 
-If specified, do not call C<Test::Builder::plan>.
-You may need to specify it, if this test is embedded into other tests.
+If specified, do not call C<Test::Builder::plan>. You may need to specify it, if this test is embedded into other tests.
 
 =option C<:minperlver> <C<version>>
 
-C<prereq_matches_use> indicator ignores core modules.
-What modules are in core, however, is different among perl versions.
-If minimum perl version is specified in META.yml or such a meta information, it is used as minimum perl version.
-Otherewise, C<$]>, the version of the current perl interpreter, is used.
+C<prereq_matches_use> indicator ignores core modules. What modules are in core, however, is different among perl versions. If minimum perl version is specified in META.yml or such a meta information, it is used as minimum perl version. Otherewise, C<$]>, the version of the current perl interpreter, is used.
 
 If specified, this option overrides them.
 
 =head1 INDICATORS
 
-In L<Module::CPANTS::Analyse>, prereq_matches_use requires CPANTS DB setup by L<Module::CPANTS::ProcessCPAN>.
-is_prereq really requires information of prereq of other modules but prereq_matches_use only needs mappings between modules and dists.
-So, this module query the mappings to MetaCPAN by using L<MetaCPAN::API::Tiny>.
+In L<Module::CPANTS::Analyse>, C<prereq_matches_use> requires CPANTS DB setup by L<Module::CPANTS::ProcessCPAN>. C<is_prereq> really requires information of prereq of other modules but C<prereq_matches_use> only needs mappings between modules and dists. So, this module query the mappings to MetaCPAN by using L<MetaCPAN::API::Tiny>.
 
-For default configuration, indicators are treated as follows:
+Recently, L<Module::CPANTS::Analyse> has been changed much. For actual available indicators, please consult C<Module::CPANTS::Kwalitee::*> documentation. For default configuration, indicators are treated as follows:
 
 =begin :list
+
+= NOTES
+
+=for :list
+= B<(+)>
+No longer available for L<Module::CPANTS::Analyse> 0.88 or 0.90+.
+= B<(++)>
+No longer available for L<Module::CPANTS::Analyse> 0.90+.
+= B<(+++)>
+No longer available for L<Module::CPANTS::Analyse> 0.88 or 0.90+, moved to L<Module::CPANTS::SiteKwalitee|https://github.com/cpants/Module-CPANTS-SiteKwalitee>.
+= B<(++++)>
+No longer available for L<Module::CPANTS::Analyse> 0.88 or 0.90+, moved to L<Module::CPANTS::SiteKwalitee|https://github.com/cpants/Module-CPANTS-SiteKwalitee> but supported by this module.
 
 = Available indicators in core
 
@@ -429,31 +424,31 @@ For default configuration, indicators are treated as follows:
 * has_changelog
 * no_symlinks
 * has_tests
-* buildtool_not_executable
+* buildtool_not_executable B<(++)>
 * metayml_is_parsable
-* metayml_has_license
+* metayml_has_license B<(optional for 0.88 or 0.90+)>
 * metayml_conforms_to_known_spec
-* proper_libs
-* no_pod_errors
-* has_working_buildtool
-* has_better_auto_install
+* proper_libs B<(for 0.87 or 0.89)>
+* no_pod_errors B<(+)>
+* has_working_buildtool B<(+)>
+* has_better_auto_install B<(+)>
 * use_strict
-* valid_signature
-* has_humanreadable_license
-* no_cpants_errors
+* valid_signature B<(+++)>
+* has_humanreadable_license B<(for 0.87 or 0.89)> | has_human_redable_license B<(for 0.88 or 0.90+)>
+* no_cpants_errors B<(+)>
 
 = Available indicators in optional
 
 =for :list
 * has_tests_in_t_dir
-* has_example
+* has_example B<(+)>
 * no_stdin_for_prompting
 * metayml_conforms_spec_current
 * metayml_declares_perl_version
-* prereq_matches_use
+* prereq_matches_use B<(++++)>
 * use_warnings
-* has_test_pod
-* has_test_pod_coverage
+* has_test_pod B<(+)>
+* has_test_pod_coverage B<(+)>
 
 = Excluded indicators in core
 
@@ -462,16 +457,16 @@ For default configuration, indicators are treated as follows:
 = Can not apply already unpacked dist
 
 =for :list
-* extractable
-* extracts_nicely
-* has_version
-* has_proper_version
+* extractable B<(+)>
+* extracts_nicely B<(+)>
+* has_version B<(+)>
+* has_proper_version B<(+)>
 
 = Already dirty in test phase
 
 =for :list
 * manifest_matches_dist
-* no_generated_files
+* no_generated_files B<(++)>
 
 =end :list
 
@@ -479,12 +474,22 @@ For default configuration, indicators are treated as follows:
 
 =begin :list
 
+= Can not apply already unpacked dist
+
+=for :list
+* proper_libs B<(for 0.88 or 0.90+)>
+
 = Needs CPANTS DB
 
 =for :list
-* is_prereq
+* is_prereq B<(+++)>
 
 =end :list
+
+= Indicators with special note in experimental
+
+=for :list
+* build_prereq_matches_use B<(++++)>
 
 =end :list
 
