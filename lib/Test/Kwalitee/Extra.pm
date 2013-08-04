@@ -18,6 +18,11 @@ use Module::CPANTS::Kwalitee::Prereq;
 use Module::CoreList;
 use Module::Extract::Namespaces;
 
+sub _exclude_proper_libs
+{
+	my $target_ver = version->parse($Module::CPANTS::Analyse::VERSION);
+	return $target_ver == version->parse('0.88') || $target_ver > version->parse('0.89');
+}
 
 sub _init
 {
@@ -29,6 +34,7 @@ sub _init
 			extracts_nicely => 1,
 			has_version => 1,
 			has_proper_version => 1,
+			_exclude_proper_libs() ? (proper_libs => 1) : (),
 
 		# already dirty in test phase
 			no_generated_files => 1,
