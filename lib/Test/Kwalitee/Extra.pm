@@ -374,7 +374,7 @@ For example,
 
   use Test::Kwalitee::Extra qw(!has_example :optional);
 
-C<!has_example> is in effect, that is C<has_exaple> is excluded, even though C<has_example> is an C<optional> indicator.
+C<!has_example> is in effect, that is C<has_example> is excluded, even though C<has_example> is an C<optional> indicator.
 
 Second, default excluded indicators mentioned in L</INDICATORS> section are not included by specifying tags. For example, in the above example, C<:optional> does not enable C<is_prereq>. You can override it by explicitly specifying the indicator:
 
