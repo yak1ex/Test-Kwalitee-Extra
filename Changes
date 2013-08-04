@@ -2,6 +2,15 @@ Revision history for {{$dist->name}}
 
 {{$NEXT}}
 
+v0.1.0    2013-08-05 03:27:59 Asia/Tokyo
+    [Functional Change]
+        - Check validity for Module::CPANTS::Analyse from 0.88 to 0.90_02.
+            - proper_libs is disabled for 0.88 and 0.90+.
+            - Make prereq_matches_use and build_prereq_matches_use available though deleted in 0.88 and 0.90+.
+            - Consider exclusion of use in eval for prereq_matches_use.
+    [Non-functional Change]
+        - Use DZPB::Author::YAKEX.
+
 v0.0.8    2013-06-18 23:02:32 Asia/Tokyo
     [Non-functional Change]
         - Add minimum version of Module::CoreList (thanks Guillaume Aubert).
