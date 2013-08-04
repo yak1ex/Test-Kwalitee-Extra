@@ -1,3 +1,5 @@
+kwalitee.pl
+
 # Version control files and dirs.
 \bRCS\b
 \bCVS\b
