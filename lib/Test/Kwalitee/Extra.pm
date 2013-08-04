@@ -156,8 +156,8 @@ sub _do_test_pmu
 		my $result = $mcpan->module($key);
 		croak 'Query to MetaCPAN failed for $val->{requires}' if ! exists $result->{distribution};
 		my $dist = $result->{distribution};
-		push @missing, $key.' in '.$dist if $val->{in_code} && ! exists $prereq{$dist};
-		push @bmissing, $key.' in '.$dist if $val->{in_tests} && ! exists $build_prereq{$dist};
+		push @missing, $key.' in '.$dist if $val->{in_code} && $val->{in_code} != ($val->{evals_in_code} || 0) && ! exists $prereq{$dist};
+		push @bmissing, $key.' in '.$dist if $val->{in_tests} && $val->{in_tests} != ($val->{evals_in_tests} || 0) && ! exists $build_prereq{$dist};
 	}
 
 	_do_test_one($test, @missing == 0, 'prereq_matches_use by '.__PACKAGE__, $error, $remedy, 'Missing: '.join(', ', sort @missing))

@@ -5,10 +5,21 @@ use FindBin;
 use lib $FindBin::Bin;
 
 my ($error, $remedy, $berror, $bremedy) = do 'prereq_matches_use_info.pl'; # To avoid use and require
+require Module::CPANTS::Analyse;
+my $target_ver = version->parse($Module::CPANTS::Analyse::VERSION);
+my @use = ('File::Spec::Functions in PathTools', 'File::Temp in File-Temp', 'Term::ANSIColor in Term-ANSIColor');
+push @use,
+	'Pod::Coverage::TrustPod in Pod-Coverage-TrustPod',
+	'Test::Perl::Critic in Test-Perl-Critic',
+	'Test::Pod in Test-Pod',
+	'Test::Pod::Coverage in Test-Pod-Coverage',
+	'Test::Script in Test-Script'
+	if $target_ver <= version->parse('0.89') && $target_ver != version->parse('0.88');
+
 test_out('not ok 1 - build_prereq_matches_use by Test::Kwalitee::Extra');
 test_fail(+6);
 test_diag("  Detail: $berror");
-test_diag('  Detail: Missing: File::Spec::Functions in PathTools, File::Temp in File-Temp, Pod::Coverage::TrustPod in Pod-Coverage-TrustPod, Term::ANSIColor in Term-ANSIColor, Test::Perl::Critic in Test-Perl-Critic, Test::Pod in Test-Pod, Test::Pod::Coverage in Test-Pod-Coverage, Test::Script in Test-Script');
+test_diag('  Detail: Missing: ' . join(', ', sort @use));
 test_diag("  Remedy: $bremedy");
 
 require Test::Kwalitee::Extra;
