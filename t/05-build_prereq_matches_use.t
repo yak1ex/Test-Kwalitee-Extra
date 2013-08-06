@@ -1,3 +1,4 @@
+use version 0.77;
 use Test::Builder::Tester tests => 1;
 use Test::More;
 use Term::ANSIColor; # Core from 5.006

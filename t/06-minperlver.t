@@ -1,3 +1,4 @@
+use version 0.77;
 use Test::Builder::Tester tests => 1;
 use Test::More;
 use File::Spec::Functions; # Core from 5.00504
