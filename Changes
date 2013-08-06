@@ -2,6 +2,10 @@ Revision history for {{$dist->name}}
 
 {{$NEXT}}
 
+v0.1.1    2013-08-06 22:22:25 Asia/Tokyo
+    [Non-functional Change]
+        - Fix missing "use version" in tests (close gh-11).
+
 v0.1.0    2013-08-05 03:27:59 Asia/Tokyo
     [Functional Change]
         - Check validity for Module::CPANTS::Analyse from 0.88 to 0.90_02.

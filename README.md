@@ -4,7 +4,7 @@ Test::Kwalitee::Extra - Run Kwalitee tests including optional indicators, especi
 
 # VERSION
 
-version v0.1.0
+version v0.1.1
 
 # SYNOPSIS
 
@@ -43,7 +43,7 @@ For example,
 
     use Test::Kwalitee::Extra qw(!has_example :optional);
 
-`!has_example` is in effect, that is `has_exaple` is excluded, even though `has_example` is an `optional` indicator.
+`!has_example` is in effect, that is `has_example` is excluded, even though `has_example` is an `optional` indicator.
 
 Second, default excluded indicators mentioned in ["INDICATORS"](#INDICATORS) section are not included by specifying tags. For example, in the above example, `:optional` does not enable `is_prereq`. You can override it by explicitly specifying the indicator:
 
