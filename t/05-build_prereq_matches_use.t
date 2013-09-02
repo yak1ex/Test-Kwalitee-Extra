@@ -2,6 +2,7 @@ use version 0.77;
 use Test::Builder::Tester tests => 1;
 use Test::More;
 use Term::ANSIColor; # Core from 5.006
+use File::Temp; # DZP::Test::Compile no longer depends on it, specifying explicitly here to keep our behavior
 use FindBin;
 use lib $FindBin::Bin;
 
