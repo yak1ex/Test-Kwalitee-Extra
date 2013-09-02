@@ -131,11 +131,15 @@ sub _do_test_pmu
 	}
 	my $mcpan = MetaCPAN::API::Tiny->new;
 
+	my %qerror;
 	my (%build_prereq, %prereq);
 	foreach my $val (@{$analyser->d->{prereq}}) {
 		next if _is_core($val->{requires}, $minperlver);
-		my $result = $mcpan->module($val->{requires});
-		croak 'Query to MetaCPAN failed for $val->{requires}' if ! exists $result->{distribution};
+		my $result = eval { $mcpan->module($val->{requires}) };
+		if($@ || ! exists $result->{distribution}) {
+			$qerror{$val->{requires}} = 1;
+			next;
+		}
 		$prereq{$result->{distribution}} = 1 if $val->{is_prereq} || $val->{is_optional_prereq};
 		$build_prereq{$result->{distribution}} = 1 if $val->{is_prereq} || $val->{is_build_prereq} || $val->{is_optional_prereq};
 	}
@@ -153,16 +157,25 @@ sub _do_test_pmu
 		# Skip packages provided by the distribution but not indexed by CPAN.
 		next if scalar( grep {$key eq $_} @$packages_not_indexed ) != 0;
 		next if _is_core($key, $minperlver);
-		my $result = $mcpan->module($key);
-		croak 'Query to MetaCPAN failed for $val->{requires}' if ! exists $result->{distribution};
+		next if $key =~ m'[$@%*&]'; # ignore entry including sigil
+		my $result = eval { $mcpan->module($key) };
+		if($@ || ! exists $result->{distribution}) {
+			$qerror{$key} = 1;
+			next;
+		}
 		my $dist = $result->{distribution};
 		push @missing, $key.' in '.$dist if $val->{in_code} && $val->{in_code} != ($val->{evals_in_code} || 0) && ! exists $prereq{$dist};
 		push @bmissing, $key.' in '.$dist if $val->{in_tests} && $val->{in_tests} != ($val->{evals_in_tests} || 0) && ! exists $build_prereq{$dist};
 	}
 
-	_do_test_one($test, @missing == 0, 'prereq_matches_use by '.__PACKAGE__, $error, $remedy, 'Missing: '.join(', ', sort @missing))
+	if(%qerror) {
+		$remedy = $bremedy = 'Fix query error(s) to MetaCPAN.';
+	}
+	_do_test_one($test, ! %qerror &&  @missing == 0, 'prereq_matches_use by '.__PACKAGE__, $error, $remedy,
+		! %qerror ? 'Missing: '.join(', ', sort @missing) : 'Query error: '.join(' ', sort keys %qerror))
 		if _check_ind($env, { name => 'prereq_matches_use', is_extra => 1 });
-	_do_test_one($test, @bmissing == 0, 'build_prereq_matches_use by '.__PACKAGE__, $berror, $bremedy, 'Missing: '.join(', ', sort @bmissing))
+	_do_test_one($test, ! %qerror && @bmissing == 0, 'build_prereq_matches_use by '.__PACKAGE__, $berror, $bremedy,
+		! %qerror ? 'Missing: '.join(', ', sort @bmissing) : 'Query error: '.join(' ', sort keys %qerror))
 		if _check_ind($env, { name => 'build_prereq_matches_use', is_experimental => 1 });
 }
 
