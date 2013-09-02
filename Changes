@@ -2,6 +2,13 @@ Revision history for {{$dist->name}}
 
 {{$NEXT}}
 
+v0.1.2    2013-09-02 22:56:41 Asia/Tokyo
+    [Functional Change]
+        - Ignore entries including sigil because they are likely to be variables (close gh-12).
+       -  Trap query errors by MetaCPAN::API::Tiny (close gh-12).
+    [Non-functional Change]
+        - Add fake use of File::Temp to keep our test behavior because DZP::Test::Compile no longer depends on it.
+
 v0.1.1    2013-08-06 22:22:25 Asia/Tokyo
     [Non-functional Change]
         - Fix missing "use version" in tests (close gh-11).
