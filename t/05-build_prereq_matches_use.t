@@ -2,7 +2,6 @@ use version 0.77;
 use Test::Builder::Tester tests => 1;
 use Test::More;
 use Term::ANSIColor; # Core from 5.006
-use File::Temp; # DZP::Test::Compile no longer depends on it, specifying explicitly here to keep our behavior
 use FindBin;
 use lib $FindBin::Bin;
 
@@ -15,7 +14,6 @@ push @use,
 	'Test::Perl::Critic in Test-Perl-Critic',
 	'Test::Pod in Test-Pod',
 	'Test::Pod::Coverage in Test-Pod-Coverage',
-	'Test::Script in Test-Script'
 	if $target_ver <= version->parse('0.89') && $target_ver != version->parse('0.88');
 
 test_out('not ok 1 - build_prereq_matches_use by Test::Kwalitee::Extra');
