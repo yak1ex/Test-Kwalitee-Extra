@@ -264,8 +264,8 @@ sub _count_tests
 		}
 	}
 	# overrides needs_db
-	++$count if ! _check_ind($env, { name => 'prereq_matches_use', is_extra => 1 });
-	++$count if ! _check_ind($env, { name => 'build_prereq_matches_use', is_experimental => 1 });
+	++$count if _check_ind($env, { name => 'prereq_matches_use', is_extra => 1 });
+	++$count if _check_ind($env, { name => 'build_prereq_matches_use', is_experimental => 1 });
 	return $count;
 }
 
