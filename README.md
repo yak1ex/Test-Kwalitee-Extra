@@ -4,7 +4,7 @@ Test::Kwalitee::Extra - Run Kwalitee tests including optional indicators, especi
 
 # VERSION
 
-version v0.1.2
+version v0.1.3
 
 # SYNOPSIS
 

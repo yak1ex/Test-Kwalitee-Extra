@@ -2,10 +2,17 @@ Revision history for {{$dist->name}}
 
 {{$NEXT}}
 
+v0.1.3    2013-09-10 01:49:22 Asia/Tokyo
+    [Functional Change]
+        - Count tests correctly for prereq_matches_use and build_prereq_matches_use (close gh-13).
+    [Non-functional Change]
+        - Do not fake expected failure (close gh-14).
+        - Use DZP::Test::Compile 2.027.
+
 v0.1.2    2013-09-02 22:56:41 Asia/Tokyo
     [Functional Change]
         - Ignore entries including sigil because they are likely to be variables (close gh-12).
-       -  Trap query errors by MetaCPAN::API::Tiny (close gh-12).
+        - Trap query errors by MetaCPAN::API::Tiny (close gh-12).
     [Non-functional Change]
         - Add fake use of File::Temp to keep our test behavior because DZP::Test::Compile no longer depends on it.
 
