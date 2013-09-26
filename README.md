@@ -4,7 +4,7 @@ Test::Kwalitee::Extra - Run Kwalitee tests including optional indicators, especi
 
 # VERSION
 
-version v0.1.3
+version v0.2.0
 
 # SYNOPSIS
 
@@ -62,6 +62,12 @@ If specified, do not call `Test::Builder::plan`. You may need to specify it, if 
 `prereq_matches_use` indicator ignores core modules. What modules are in core, however, is different among perl versions. If minimum perl version is specified in META.yml or such a meta information, it is used as minimum perl version. Otherewise, `$]`, the version of the current perl interpreter, is used.
 
 If specified, this option overrides them.
+
+## `:retry` <`count`\>
+
+The number of retry to query to MetaCPAN. This is related with `prereq_matches_use` and `build_prereq_matches_use` indicators only.
+
+Defaults to 5.
 
 # INDICATORS
 
