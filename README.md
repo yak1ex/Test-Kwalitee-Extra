@@ -4,7 +4,7 @@ Test::Kwalitee::Extra - Run Kwalitee tests including optional indicators, especi
 
 # VERSION
 
-version v0.2.0
+version v0.2.1
 
 # SYNOPSIS
 
@@ -27,17 +27,22 @@ version v0.2.0
     eval { require Test::Kwalitee::Extra; Test::Kwalitee::Extra->import(qw(!:optional)); };
     plan( skip_all => "Test::Kwalitee::Extra not installed: $@; skipping") if $@;
 
+    # Avoid network access
+    use Test::Kwalitee::Extra qw(!prereq_matches_use);
+    # or, when experimental enabled
+    use Test::Kwalitee::Extra qw(:experimental !prereq_matches_use !build_prereq_matches_use);
+
 # DESCRIPTION
 
-[CPANTS](http://cpants.cpanauthors.org/) checks Kwalitee indicators, which is not quality but automatically-measurable indicators how good your distribution is. [Module::CPANTS::Analyse](http://search.cpan.org/perldoc?Module::CPANTS::Analyse) calcluates Kwalitee but it is not directly applicable to your module test. CPAN has already had [Test::Kwalitee](http://search.cpan.org/perldoc?Test::Kwalitee) for the test module of Kwalitee. It is, however, impossible to calculate `prereq_matches_use` indicator, because dependent module [Module::CPANTS::Analyse](http://search.cpan.org/perldoc?Module::CPANTS::Analyse) itself cannot calculate `prereq_matches_use` indicator. It is marked as `needs_db`, but only limited information is needed to calculate the indicator. This module calculate `prereq_matches_use` to query needed information to [MetaCPAN](https://metacpan.org/).
+[CPANTS](http://cpants.cpanauthors.org/) checks Kwalitee indicators, which is not quality but automatically-measurable indicators how good your distribution is. [Module::CPANTS::Analyse](https://metacpan.org/pod/Module::CPANTS::Analyse) calcluates Kwalitee but it is not directly applicable to your module test. CPAN has already had [Test::Kwalitee](https://metacpan.org/pod/Test::Kwalitee) for the test module of Kwalitee. It is, however, impossible to calculate `prereq_matches_use` indicator, because dependent module [Module::CPANTS::Analyse](https://metacpan.org/pod/Module::CPANTS::Analyse) itself cannot calculate `prereq_matches_use` indicator. It is marked as `needs_db` which means pre-calculated module database is necessary, but only limited information is needed to calculate the indicator. This module calculate `prereq_matches_use` to query needed information to [MetaCPAN site](https://metacpan.org/) online.
 
-For available indicators, see ["INDICATORS"](#INDICATORS) section.
+For available indicators, see ["INDICATORS"](#indicators) section.
 
 # OPTIONS
 
-You can specify including or excluding an indicator or a tag like [Exporter](http://search.cpan.org/perldoc?Exporter). Valid tags are `core`, `optional` and `experimental`. For indicators, see [Module::CPANTS::Analyse](http://search.cpan.org/perldoc?Module::CPANTS::Analyse).
+You can specify including or excluding an indicator or a tag like [Exporter](https://metacpan.org/pod/Exporter). Valid tags are `core`, `optional` and `experimental`. For indicators, see [Module::CPANTS::Analyse](https://metacpan.org/pod/Module::CPANTS::Analyse).
 
-Please NOTE that to specify tags are handled a bit differently from [Exporter](http://search.cpan.org/perldoc?Exporter). First, specifying an indicator is always superior to specifying tags, even though specifying an indicator is prior to specifying tags.
+Please NOTE that to specify tags are handled a bit differently from [Exporter](https://metacpan.org/pod/Exporter). First, specifying an indicator is always superior to specifying tags, even though specifying an indicator is prior to specifying tags.
 
 For example, 
 
@@ -45,7 +50,7 @@ For example,
 
 `!has_example` is in effect, that is `has_example` is excluded, even though `has_example` is an `optional` indicator.
 
-Second, default excluded indicators mentioned in ["INDICATORS"](#INDICATORS) section are not included by specifying tags. For example, in the above example, `:optional` does not enable `is_prereq`. You can override it by explicitly specifying the indicator:
+Second, default excluded indicators mentioned in ["INDICATORS"](#indicators) section are not included by specifying tags. For example, in the above example, `:optional` does not enable `is_prereq`. You can override it by explicitly specifying the indicator:
 
     use Test::Kwalitee::Extra qw(manifest_matches_dist);
 
@@ -69,28 +74,43 @@ The number of retry to query to MetaCPAN. This is related with `prereq_matches_u
 
 Defaults to 5.
 
+# CAVEATS
+
+An optional indicator `prereq_matches_use` and an experimental indicator `build_prereq_matches_use` require HTTP access to [MetaCPAN site](https://metacpan.org/). If you want to avoid it, you can specify excluded indicators like
+
+    # Avoid network access
+    use Test::Kwalitee::Extra qw(!prereq_matches_use);
+
+    # or, when experimental enabled
+    use Test::Kwalitee::Extra qw(:experimental !prereq_matches_use !build_prereq_matches_use);
+
+Or mitigate wait by tentative failures to reduce retry counts like
+
+    # Try just one time for each query
+    use Test::Kwalitee::Extra qw(:retry 1);
+
 # INDICATORS
 
-In [Module::CPANTS::Analyse](http://search.cpan.org/perldoc?Module::CPANTS::Analyse), `prereq_matches_use` requires CPANTS DB setup by [Module::CPANTS::ProcessCPAN](http://search.cpan.org/perldoc?Module::CPANTS::ProcessCPAN). `is_prereq` really requires information of prereq of other modules but `prereq_matches_use` only needs mappings between modules and dists. So, this module query the mappings to MetaCPAN by using [MetaCPAN::API::Tiny](http://search.cpan.org/perldoc?MetaCPAN::API::Tiny).
+In [Module::CPANTS::Analyse](https://metacpan.org/pod/Module::CPANTS::Analyse), `prereq_matches_use` requires CPANTS DB setup by [Module::CPANTS::ProcessCPAN](https://metacpan.org/pod/Module::CPANTS::ProcessCPAN). `is_prereq` really requires information of prereq of other modules but `prereq_matches_use` only needs mappings between modules and dists. So, this module query the mappings to MetaCPAN by using [MetaCPAN::API::Tiny](https://metacpan.org/pod/MetaCPAN::API::Tiny).
 
-Recently, [Module::CPANTS::Analyse](http://search.cpan.org/perldoc?Module::CPANTS::Analyse) has been changed much. For actual available indicators, please consult `Module::CPANTS::Kwalitee::*` documentation. For default configuration, indicators are treated as follows:
+Recently, [Module::CPANTS::Analyse](https://metacpan.org/pod/Module::CPANTS::Analyse) has been changed much. For actual available indicators, please consult `Module::CPANTS::Kwalitee::*` documentation. For default configuration, indicators are treated as follows:
 
 - NOTES
     - __(+)__
 
-        No longer available for [Module::CPANTS::Analyse](http://search.cpan.org/perldoc?Module::CPANTS::Analyse) 0.88 or 0.90+.
+        No longer available for [Module::CPANTS::Analyse](https://metacpan.org/pod/Module::CPANTS::Analyse) 0.88 or 0.90+.
 
     - __(++)__
 
-        No longer available for [Module::CPANTS::Analyse](http://search.cpan.org/perldoc?Module::CPANTS::Analyse) 0.90+.
+        No longer available for [Module::CPANTS::Analyse](https://metacpan.org/pod/Module::CPANTS::Analyse) 0.90+.
 
     - __(+++)__
 
-        No longer available for [Module::CPANTS::Analyse](http://search.cpan.org/perldoc?Module::CPANTS::Analyse) 0.88 or 0.90+, moved to [Module::CPANTS::SiteKwalitee](https://github.com/cpants/Module-CPANTS-SiteKwalitee).
+        No longer available for [Module::CPANTS::Analyse](https://metacpan.org/pod/Module::CPANTS::Analyse) 0.88 or 0.90+, moved to [Module::CPANTS::SiteKwalitee](https://github.com/cpants/Module-CPANTS-SiteKwalitee).
 
     - __(++++)__
 
-        No longer available for [Module::CPANTS::Analyse](http://search.cpan.org/perldoc?Module::CPANTS::Analyse) 0.88 or 0.90+, moved to [Module::CPANTS::SiteKwalitee](https://github.com/cpants/Module-CPANTS-SiteKwalitee) but supported by this module.
+        No longer available for [Module::CPANTS::Analyse](https://metacpan.org/pod/Module::CPANTS::Analyse) 0.88 or 0.90+, moved to [Module::CPANTS::SiteKwalitee](https://github.com/cpants/Module-CPANTS-SiteKwalitee) but supported by this module.
 - Available indicators in core
     - has\_readme
     - has\_manifest
@@ -140,9 +160,9 @@ Recently, [Module::CPANTS::Analyse](http://search.cpan.org/perldoc?Module::CPANT
 
 # SEE ALSO
 
-- [Module::CPANTS::Analyse](http://search.cpan.org/perldoc?Module::CPANTS::Analyse) - Kwalitee indicators, except for prereq\_matches\_use, are calculated by this module.
-- [Test::Kwalitee](http://search.cpan.org/perldoc?Test::Kwalitee) - Another test module for Kwalitee indicators.
-- [Dist::Zilla::Plugin::Test::Kwalitee::Extra](http://search.cpan.org/perldoc?Dist::Zilla::Plugin::Test::Kwalitee::Extra) - Dist::Zilla plugin for this module.
+- [Module::CPANTS::Analyse](https://metacpan.org/pod/Module::CPANTS::Analyse) - Kwalitee indicators, except for prereq\_matches\_use, are calculated by this module.
+- [Test::Kwalitee](https://metacpan.org/pod/Test::Kwalitee) - Another test module for Kwalitee indicators.
+- [Dist::Zilla::Plugin::Test::Kwalitee::Extra](https://metacpan.org/pod/Dist::Zilla::Plugin::Test::Kwalitee::Extra) - Dist::Zilla plugin for this module.
 
 # AUTHOR
 
@@ -150,7 +170,7 @@ Yasutaka ATARASHI <yakex@cpan.org>
 
 # COPYRIGHT AND LICENSE
 
-This software is copyright (c) 2013 by Yasutaka ATARASHI.
+This software is copyright (c) 2014 by Yasutaka ATARASHI.
 
 This is free software; you can redistribute it and/or modify it under
 the same terms as the Perl 5 programming language system itself.

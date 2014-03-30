@@ -2,6 +2,10 @@ Revision history for {{$dist->name}}
 
 {{$NEXT}}
 
+v0.2.1    2014-03-30 13:05:16 Asia/Tokyo
+    [Non-functional Change]
+        - Add explicit caution and workaround for network access in POD (gh-17).
+
 v0.2.0    2013-09-26 16:21:30 Asia/Tokyo
     [Functional Change]
         - Add retry feature.
