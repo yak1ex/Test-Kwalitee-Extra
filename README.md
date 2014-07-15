@@ -62,13 +62,13 @@ Some tags have special meanings.
 
 If specified, do not call `Test::Builder::plan`. You may need to specify it, if this test is embedded into other tests.
 
-## `:minperlver` <`version`\>
+## `:minperlver` <`version`>
 
 `prereq_matches_use` indicator ignores core modules. What modules are in core, however, is different among perl versions. If minimum perl version is specified in META.yml or such a meta information, it is used as minimum perl version. Otherewise, `$]`, the version of the current perl interpreter, is used.
 
 If specified, this option overrides them.
 
-## `:retry` <`count`\>
+## `:retry` <`count`>
 
 The number of retry to query to MetaCPAN. This is related with `prereq_matches_use` and `build_prereq_matches_use` indicators only.
 
@@ -96,19 +96,19 @@ In [Module::CPANTS::Analyse](https://metacpan.org/pod/Module::CPANTS::Analyse), 
 Recently, [Module::CPANTS::Analyse](https://metacpan.org/pod/Module::CPANTS::Analyse) has been changed much. For actual available indicators, please consult `Module::CPANTS::Kwalitee::*` documentation. For default configuration, indicators are treated as follows:
 
 - NOTES
-    - __(+)__
+    - **(+)**
 
         No longer available for [Module::CPANTS::Analyse](https://metacpan.org/pod/Module::CPANTS::Analyse) 0.88 or 0.90+.
 
-    - __(++)__
+    - **(++)**
 
         No longer available for [Module::CPANTS::Analyse](https://metacpan.org/pod/Module::CPANTS::Analyse) 0.90+.
 
-    - __(+++)__
+    - **(+++)**
 
         No longer available for [Module::CPANTS::Analyse](https://metacpan.org/pod/Module::CPANTS::Analyse) 0.88 or 0.90+, moved to [Module::CPANTS::SiteKwalitee](https://github.com/cpants/Module-CPANTS-SiteKwalitee).
 
-    - __(++++)__
+    - **(++++)**
 
         No longer available for [Module::CPANTS::Analyse](https://metacpan.org/pod/Module::CPANTS::Analyse) 0.88 or 0.90+, moved to [Module::CPANTS::SiteKwalitee](https://github.com/cpants/Module-CPANTS-SiteKwalitee) but supported by this module.
 - Available indicators in core
@@ -119,44 +119,44 @@ Recently, [Module::CPANTS::Analyse](https://metacpan.org/pod/Module::CPANTS::Ana
     - has\_changelog
     - no\_symlinks
     - has\_tests
-    - buildtool\_not\_executable __(++)__
+    - buildtool\_not\_executable **(++)**
     - metayml\_is\_parsable
-    - metayml\_has\_license __(optional for 0.88 or 0.90+)__
+    - metayml\_has\_license **(optional for 0.88 or 0.90+)**
     - metayml\_conforms\_to\_known\_spec
-    - proper\_libs __(for 0.87 or 0.89)__
-    - no\_pod\_errors __(+)__
-    - has\_working\_buildtool __(+)__
-    - has\_better\_auto\_install __(+)__
+    - proper\_libs **(for 0.87 or 0.89)**
+    - no\_pod\_errors **(+)**
+    - has\_working\_buildtool **(+)**
+    - has\_better\_auto\_install **(+)**
     - use\_strict
-    - valid\_signature __(+++)__
-    - has\_humanreadable\_license __(for 0.87 or 0.89)__ | has\_human\_redable\_license __(for 0.88 or 0.90+)__
-    - no\_cpants\_errors __(+)__
+    - valid\_signature **(+++)**
+    - has\_humanreadable\_license **(for 0.87 or 0.89)** | has\_human\_redable\_license **(for 0.88 or 0.90+)**
+    - no\_cpants\_errors **(+)**
 - Available indicators in optional
     - has\_tests\_in\_t\_dir
-    - has\_example __(+)__
+    - has\_example **(+)**
     - no\_stdin\_for\_prompting
     - metayml\_conforms\_spec\_current
     - metayml\_declares\_perl\_version
-    - prereq\_matches\_use __(++++)__
+    - prereq\_matches\_use **(++++)**
     - use\_warnings
-    - has\_test\_pod __(+)__
-    - has\_test\_pod\_coverage __(+)__
+    - has\_test\_pod **(+)**
+    - has\_test\_pod\_coverage **(+)**
 - Excluded indicators in core
     - Can not apply already unpacked dist
-        - extractable __(+)__
-        - extracts\_nicely __(+)__
-        - has\_version __(+)__
-        - has\_proper\_version __(+)__
+        - extractable **(+)**
+        - extracts\_nicely **(+)**
+        - has\_version **(+)**
+        - has\_proper\_version **(+)**
     - Already dirty in test phase
         - manifest\_matches\_dist
-        - no\_generated\_files __(++)__
+        - no\_generated\_files **(++)**
 - Excluded indicators in optional
     - Can not apply already unpacked dist
-        - proper\_libs __(for 0.88 or 0.90+)__
+        - proper\_libs **(for 0.88 or 0.90+)**
     - Needs CPANTS DB
-        - is\_prereq __(+++)__
+        - is\_prereq **(+++)**
 - Indicators with special note in experimental
-    - build\_prereq\_matches\_use __(++++)__
+    - build\_prereq\_matches\_use **(++++)**
 
 # SEE ALSO
 
