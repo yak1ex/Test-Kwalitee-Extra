@@ -2,6 +2,10 @@ Revision history for {{$dist->name}}
 
 {{$NEXT}}
 
+v0.3.0    2014-08-17 11:45:34JST+0900 Asia/Tokyo
+    [Functional Change]
+        - Adopt to new stash layout of Module::CPANTS::Analyse since 0.93_01 (gh-19).
+
 v0.2.1    2014-03-30 13:05:16 Asia/Tokyo
     [Non-functional Change]
         - Add explicit caution and workaround for network access in POD (gh-17).
