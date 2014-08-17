@@ -8,13 +8,14 @@ use lib $FindBin::Bin;
 my ($error, $remedy, $berror, $bremedy) = do 'prereq_matches_use_info.pl'; # To avoid use and require
 require Module::CPANTS::Analyse;
 my $target_ver = version->parse($Module::CPANTS::Analyse::VERSION);
-my @use = ('File::Spec::Functions in PathTools', 'Term::ANSIColor in Term-ANSIColor');
-push @use,
-	'Pod::Coverage::TrustPod in Pod-Coverage-TrustPod',
-	'Test::Perl::Critic in Test-Perl-Critic',
+my @use = (
+	'File::Spec::Functions in PathTools',
+	'Term::ANSIColor in Term-ANSIColor',
 	'Test::Pod in Test-Pod',
 	'Test::Pod::Coverage in Test-Pod-Coverage',
-	if $target_ver <= version->parse('0.89') && $target_ver != version->parse('0.88');
+	'Pod::Coverage::TrustPod in Pod-Coverage-TrustPod',
+);
+push @use, 'Test::Perl::Critic in Test-Perl-Critic' unless $target_ver > version->parse('0.89') || $target_ver == version->parse('0.88');
 
 test_out('not ok 1 - build_prereq_matches_use by Test::Kwalitee::Extra');
 test_fail(+6);

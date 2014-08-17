@@ -108,6 +108,59 @@ sub _do_test_one
 	}
 }
 
+sub _is_missing_check_for_old
+{
+	my ($uses, $prereq, $build_prereq, $minperlver, $mcpan, $is_old, $packages_not_indexed, $missing, $bmissing, $qerror) = @_;
+
+	while(my ($key, $val) = each %$uses) {
+		next if version::is_lax($key); # perl version
+		# Skip packages provided by the distribution but not indexed by CPAN.
+		next if scalar( grep {$key eq $_} @$packages_not_indexed ) != 0;
+		next if _is_core($key, $minperlver);
+		next if $key =~ m'[$@%*&]'; # ignore entry including sigil
+		my $result = eval { $mcpan->module($key) };
+		if($@ || ! exists $result->{distribution}) {
+			$qerror->{$key} = 1;
+			next;
+		}
+		my $dist = $result->{distribution};
+		push @$missing, $key.' in '.$dist if $val->{in_code} && $val->{in_code} != ($val->{evals_in_code} || 0) && ! exists $prereq->{$dist};
+		push @$bmissing, $key.' in '.$dist if $val->{in_tests} && $val->{in_tests} != ($val->{evals_in_tests} || 0) && ! exists $build_prereq->{$dist};
+	}
+}
+
+my %uses_keys = (
+	used_in_code => '',
+	required_in_code => '',
+	used_in_tests => 'build',
+	required_in_tests => 'build'
+);
+sub _is_missing_check_for_new
+{
+	my ($uses, $prereq, $build_prereq, $minperlver, $mcpan, $is_old, $packages_not_indexed, $missing, $bmissing, $qerror) = @_;
+
+	foreach my $uses_keys (keys %uses_keys) {
+		while(my ($key, $val) = each %{$uses->{$uses_keys}}) {
+			next if version::is_lax($key); # perl version
+			# Skip packages provided by the distribution but not indexed by CPAN.
+			next if scalar( grep {$key eq $_} @$packages_not_indexed ) != 0;
+			next if _is_core($key, $minperlver);
+			next if $key =~ m'[$@%*&]'; # ignore entry including sigil
+			my $result = eval { $mcpan->module($key) };
+			if($@ || ! exists $result->{distribution}) {
+				$qerror->{$key} = 1;
+				next;
+			}
+			my $dist = $result->{distribution};
+			if($uses_keys{$uses_keys} ne 'build') {
+				push @$missing, $key.' in '.$dist if ! exists $prereq->{$dist};
+			} else { # build
+				push @$bmissing, $key.' in '.$dist if ! exists $build_prereq->{$dist};
+			}
+		}
+	}
+}
+
 sub _do_test_pmu
 {
 	local $Test::Builder::Level = $Test::Builder::Level + 1;
@@ -134,6 +187,7 @@ sub _do_test_pmu
 
 	my %qerror;
 	my (%build_prereq, %prereq);
+# NOTE: prereq part is kept in new stash layout of Module::CPANTS::Analyse since 0.93_01
 	foreach my $val (@{$analyser->d->{prereq}}) {
 		next if _is_core($val->{requires}, $minperlver);
                 my $retry = 0;
@@ -154,28 +208,22 @@ sub _do_test_pmu
 		$build_prereq{$result->{distribution}} = 1 if $val->{is_prereq} || $val->{is_build_prereq} || $val->{is_optional_prereq};
 	}
 
+# NOTE: uses part is changed in new stash layout of Module::CPANTS::Analyse since 0.93_01
+	my $is_old = grep { exists $analyser->d->{uses}{$_}{module} } keys %{$analyser->d->{uses}};
+
 	# Look at META.yml to determine if the author specified modules provided
 	# by the distribution that should not be indexed by CPAN.
 	my $packages_not_indexed = _get_packages_not_indexed(
 		d       => $analyser->d,
 		distdir => $analyser->distdir,
+		is_old  => $is_old,
 	);
 
 	my (@missing, @bmissing);
-	while(my ($key, $val) = each %{$analyser->d->{uses}}) {
-		next if version::is_lax($key);
-		# Skip packages provided by the distribution but not indexed by CPAN.
-		next if scalar( grep {$key eq $_} @$packages_not_indexed ) != 0;
-		next if _is_core($key, $minperlver);
-		next if $key =~ m'[$@%*&]'; # ignore entry including sigil
-		my $result = eval { $mcpan->module($key) };
-		if($@ || ! exists $result->{distribution}) {
-			$qerror{$key} = 1;
-			next;
-		}
-		my $dist = $result->{distribution};
-		push @missing, $key.' in '.$dist if $val->{in_code} && $val->{in_code} != ($val->{evals_in_code} || 0) && ! exists $prereq{$dist};
-		push @bmissing, $key.' in '.$dist if $val->{in_tests} && $val->{in_tests} != ($val->{evals_in_tests} || 0) && ! exists $build_prereq{$dist};
+	if($is_old) {
+		_is_missing_check_for_old($analyser->d->{uses}, \%prereq, \%build_prereq, $minperlver, $mcpan, $is_old, $packages_not_indexed, \@missing, \@bmissing, \%qerror);
+	} else {
+		_is_missing_check_for_new($analyser->d->{uses}, \%prereq, \%build_prereq, $minperlver, $mcpan, $is_old, $packages_not_indexed, \@missing, \@bmissing, \%qerror);
 	}
 
 	if(%qerror) {
@@ -196,6 +244,7 @@ sub _get_packages_not_indexed
 	my (%args) = @_;
 	my $d = delete $args{'d'};
 	my $distdir = delete $args{'distdir'};
+	my $is_old = delete $args{'is_old'};
 
 	# Check if no_index exists in META.yml
 	my $meta_yml = $d->{'meta_yml'};
@@ -206,6 +255,12 @@ sub _get_packages_not_indexed
 	# Get the uses, to determine which ones are no-index internals.
 	my $uses = $d->{'uses'};
 	return [] if !defined $uses;
+# NOTE: uses part is changed in new stash layout of Module::CPANTS::Analyse since 0.93_01
+	if(!$is_old) {
+		my @uses;
+		push @uses, keys %{$uses->{$_}} for qw[used_in_code required_in_code used_in_tests required_in_tests];
+		$uses = { map { ($_ => undef) } @uses };
+	}
 
 	my $packages_not_indexed = {};
 
