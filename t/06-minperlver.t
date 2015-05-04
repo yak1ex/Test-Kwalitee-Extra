@@ -1,7 +1,7 @@
 use version 0.77;
 use Test::Builder::Tester tests => 1;
 use Test::More;
-use File::Spec::Functions; # Core from 5.00504
+use File::Spec::Functions; # Core from 5.005004
 use FindBin;
 use lib $FindBin::Bin;
 
