@@ -1,4 +1,6 @@
 kwalitee.pl
+vercheck.pl
+^targets/
 
 # Version control files and dirs.
 \bRCS\b
