@@ -9,7 +9,7 @@ foreach my $val (@$ref) {
 }
 $error   ||= q{This distribution uses a module or a dist that's not listed as a prerequisite.};
 $remedy  ||= q{List all used modules in META.yml requires};
-$berror  ||= q{This distribution uses a module or a dist in it's test suite that's not listed as a build prerequisite.};
+$berror  ||= q{This distribution uses a module or a dist in its test suite that's not listed as a build prerequisite.};
 $bremedy ||= q{List all modules used in the test suite in META.yml build_requires};
 
 return ($error, $remedy, $berror, $bremedy);
