@@ -4,7 +4,7 @@ Test::Kwalitee::Extra - Run Kwalitee tests including optional indicators, especi
 
 # VERSION
 
-version v0.3.0
+version v0.3.1
 
 # SYNOPSIS
 
@@ -170,7 +170,7 @@ Yasutaka ATARASHI <yakex@cpan.org>
 
 # COPYRIGHT AND LICENSE
 
-This software is copyright (c) 2014 by Yasutaka ATARASHI.
+This software is copyright (c) 2015 by Yasutaka ATARASHI.
 
 This is free software; you can redistribute it and/or modify it under
 the same terms as the Perl 5 programming language system itself.

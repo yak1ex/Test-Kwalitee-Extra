@@ -2,6 +2,11 @@ Revision history for {{$dist->name}}
 
 {{$NEXT}}
 
+v0.3.1    2015-08-10 23:51:09+09:00 Asia/Tokyo
+    [Non-functional Change]
+        - Fix false alarm for warnings (gh-20, rt.cpan.org#104113).
+        - Fix minor grammatical error in error message (thanks Paul Cochrane).
+
 v0.3.0    2014-08-17 11:45:34JST+0900 Asia/Tokyo
     [Functional Change]
         - Adopt to new stash layout of Module::CPANTS::Analyse since 0.93_01 (gh-19).
