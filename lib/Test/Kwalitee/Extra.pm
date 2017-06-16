@@ -279,10 +279,13 @@ sub _get_packages_not_indexed
 		};
 
 		foreach my $directory (@{$no_index->{'directory'}}) {
-			File::Find::find(
-				$filter_pm_files,
-				File::Spec->catdir($distdir, $directory),
-			);
+			my $no_meta_directory = File::Spec->catdir($distdir, $directory);
+			if(-d $no_meta_directory) {
+				File::Find::find(
+					$filter_pm_files,
+					$no_meta_directory,
+				);
+			}
 		}
 	}
 
