@@ -12,7 +12,7 @@ use Carp;
 use File::Find;
 use File::Spec;
 use Test::Builder;
-use MetaCPAN::API::Tiny;
+use MetaCPAN::Client;
 use Module::CPANTS::Analyse 0.87;
 use Module::CPANTS::Kwalitee::Prereq;
 use Module::CoreList;
@@ -119,11 +119,11 @@ sub _is_missing_check_for_old
 		next if _is_core($key, $minperlver);
 		next if $key =~ m'[$@%*&]'; # ignore entry including sigil
 		my $result = eval { $mcpan->module($key) };
-		if($@ || ! exists $result->{distribution}) {
+		if($@ || ! $result->distribution) {
 			$qerror->{$key} = 1;
 			next;
 		}
-		my $dist = $result->{distribution};
+		my $dist = $result->distribution;
 		push @$missing, $key.' in '.$dist if $val->{in_code} && $val->{in_code} != ($val->{evals_in_code} || 0) && ! exists $prereq->{$dist};
 		push @$bmissing, $key.' in '.$dist if $val->{in_tests} && $val->{in_tests} != ($val->{evals_in_tests} || 0) && ! exists $build_prereq->{$dist};
 	}
@@ -147,11 +147,11 @@ sub _is_missing_check_for_new
 			next if _is_core($key, $minperlver);
 			next if $key =~ m'[$@%*&]'; # ignore entry including sigil
 			my $result = eval { $mcpan->module($key) };
-			if($@ || ! exists $result->{distribution}) {
+			if($@ || ! $result->distribution) {
 				$qerror->{$key} = 1;
 				next;
 			}
-			my $dist = $result->{distribution};
+			my $dist = $result->distribution;
 			if($uses_keys{$uses_keys} ne 'build') {
 				push @$missing, $key.' in '.$dist if ! exists $prereq->{$dist};
 			} else { # build
@@ -183,7 +183,7 @@ sub _do_test_pmu
 			}
 		}
 	}
-	my $mcpan = MetaCPAN::API::Tiny->new;
+	my $mcpan = MetaCPAN::Client->new;
 
 	my %qerror;
 	my (%build_prereq, %prereq);
@@ -194,7 +194,7 @@ sub _do_test_pmu
 		my $result;
 		while($retry < $env->{retry}) {
 			$result = eval { $mcpan->module($val->{requires}) };
-			if($@ || ! exists $result->{distribution}) {
+			if($@ || ! $result->distribution) {
 				++$retry;
 			} else {
 				last;
@@ -204,7 +204,7 @@ sub _do_test_pmu
 			$qerror{$val->{requires}} = 1;
 			next;
 		}
-		$prereq{$result->{distribution}} = 1 if $val->{is_prereq} || $val->{is_optional_prereq};
+		$prereq{$result->distribution} = 1 if $val->{is_prereq} || $val->{is_optional_prereq};
 		$build_prereq{$result->{distribution}} = 1 if $val->{is_prereq} || $val->{is_build_prereq} || $val->{is_optional_prereq};
 	}
 
@@ -501,7 +501,7 @@ Or mitigate wait by tentative failures to reduce retry counts like
 
 =head1 INDICATORS
 
-In L<Module::CPANTS::Analyse>, C<prereq_matches_use> requires CPANTS DB setup by L<Module::CPANTS::ProcessCPAN>. C<is_prereq> really requires information of prereq of other modules but C<prereq_matches_use> only needs mappings between modules and dists. So, this module query the mappings to MetaCPAN by using L<MetaCPAN::API::Tiny>.
+In L<Module::CPANTS::Analyse>, C<prereq_matches_use> requires CPANTS DB setup by L<Module::CPANTS::ProcessCPAN>. C<is_prereq> really requires information of prereq of other modules but C<prereq_matches_use> only needs mappings between modules and dists. So, this module query the mappings to MetaCPAN by using L<MetaCPAN::Client>.
 
 Recently, L<Module::CPANTS::Analyse> has been changed much. For actual available indicators, please consult C<Module::CPANTS::Kwalitee::*> documentation. For default configuration, indicators are treated as follows:
 

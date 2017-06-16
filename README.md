@@ -91,7 +91,7 @@ Or mitigate wait by tentative failures to reduce retry counts like
 
 # INDICATORS
 
-In [Module::CPANTS::Analyse](https://metacpan.org/pod/Module::CPANTS::Analyse), `prereq_matches_use` requires CPANTS DB setup by [Module::CPANTS::ProcessCPAN](https://metacpan.org/pod/Module::CPANTS::ProcessCPAN). `is_prereq` really requires information of prereq of other modules but `prereq_matches_use` only needs mappings between modules and dists. So, this module query the mappings to MetaCPAN by using [MetaCPAN::API::Tiny](https://metacpan.org/pod/MetaCPAN::API::Tiny).
+In [Module::CPANTS::Analyse](https://metacpan.org/pod/Module::CPANTS::Analyse), `prereq_matches_use` requires CPANTS DB setup by [Module::CPANTS::ProcessCPAN](https://metacpan.org/pod/Module::CPANTS::ProcessCPAN). `is_prereq` really requires information of prereq of other modules but `prereq_matches_use` only needs mappings between modules and dists. So, this module query the mappings to MetaCPAN by using [MetaCPAN::Client](https://metacpan.org/pod/MetaCPAN::Client).
 
 Recently, [Module::CPANTS::Analyse](https://metacpan.org/pod/Module::CPANTS::Analyse) has been changed much. For actual available indicators, please consult `Module::CPANTS::Kwalitee::*` documentation. For default configuration, indicators are treated as follows:
 
@@ -170,7 +170,7 @@ Yasutaka ATARASHI <yakex@cpan.org>
 
 # COPYRIGHT AND LICENSE
 
-This software is copyright (c) 2015 by Yasutaka ATARASHI.
+This software is copyright (c) 2017 by Yasutaka ATARASHI.
 
 This is free software; you can redistribute it and/or modify it under
 the same terms as the Perl 5 programming language system itself.
